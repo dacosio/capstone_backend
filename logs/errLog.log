@@ -1,0 +1,2 @@
+20231223	15:55:42	a2c8ca0c-5385-42d0-baa5-e2da92de560d	SyntaxError: Unexpected token } in JSON at position 64	POST	/auth/login	undefined
+20231223	16:11:10	d45b6235-527b-41fc-a110-e8b2c2adeeb1	SyntaxError: Unexpected token } in JSON at position 62	PUT	/auth/login	undefined
