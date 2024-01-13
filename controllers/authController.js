@@ -141,7 +141,7 @@ const logout = (req, res) => {
   res.json({ message: "Cookie cleared" });
 };
 
-const forgotPassword = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
 
@@ -182,5 +182,5 @@ module.exports = {
   login,
   refresh,
   logout,
-  forgotPassword,
+  changePassword,
 };
