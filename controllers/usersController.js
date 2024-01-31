@@ -1,4 +1,4 @@
-const { s3UploadV2 } = require("../aws/s3");
+const { s3UploadV2, s3UploadV3 } = require("../aws/s3");
 const User = require("../models/User");
 
 const getAllUsers = async (req, res) => {
@@ -16,10 +16,10 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+//sample uplaod controller
 const uploadFile = async (req, res) => {
   try {
-    const results = await s3UploadV2(req.files);
-    console.log(results);
+    const results = await s3UploadV3(req.files);
     res.json({ status: "success", results });
   } catch (error) {
     res.status(400).json({ message: error });

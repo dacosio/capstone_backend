@@ -1,18 +1,32 @@
-const { S3 } = require("aws-sdk");
 const uuid = require("uuid").v4;
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 require("dotenv").config();
 
-exports.s3UploadV2 = async (files) => {
-  const s3 = new S3();
+exports.s3UploadV3 = async (files) => {
+  const s3Client = new S3Client({
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
 
   const params = files.map((file) => {
+    const key = `uploads/${uuid()}-${file.originalname}`;
     return {
       Bucket: process.env.AWS_BUCKET_NAME,
-      Key: `uploads/${uuid()}-${file.originalname}`,
+      Key: key,
       Body: file.buffer,
+      _key: key,
     };
   });
 
-  return await Promise.all(params.map((param) => s3.upload(param).promise()));
+  const results = await Promise.all(
+    params.map((param) => s3Client.send(new PutObjectCommand(param)))
+  );
+
+  return results.map((result, index) => ({
+    ...result,
+    Key: process.env.AWS_S3_UPLOAD_URL + params[index]._key,
+  }));
 };
