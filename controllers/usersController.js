@@ -15,6 +15,16 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const uploadFile = async (req, res) => {
+  try {
+    // lean will only save us a json data without other functions like .save() etc...
+    res.json({ status: "success" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
+  uploadFile,
 };
