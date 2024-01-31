@@ -55,13 +55,7 @@ const createCustomer = async (req, res) => {
 
 //add a new card to the customer
 const addNewCardToCustomer = async (req, res) => {
-  const { cardNumber, cardExpMonth, cardExpYear, cardCvc, cardName } = req.body;
-
-  if (!cardNumber || !cardExpMonth || !cardExpYear || !cardCvc) {
-    return res
-      .status(400)
-      .json({ Error: "Please provide all necessary details to save the card" });
-  }
+  const { token } = req.body;
 
   try {
     // Find the StripeCustomer using the user ID
