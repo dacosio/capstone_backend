@@ -31,7 +31,6 @@ const errorHandler = async (err) => {
 const createCustomer = async (req, res) => {
   try {
     const { payment_method, address } = req.body;
-    console.log(req.user);
     // Create a customer
     const customer = await stripe.customers.create({
       email: req.user,
@@ -69,8 +68,6 @@ const addNewCardToCustomer = async (req, res) => {
         source: "tok_visa", //a token must be coming from the frontend using publishable key
       });
 
-      console.log(card);
-
       return res.status(200).json({ message: "Card added successfully" });
     } else {
       return res.status(400).json({ message: "Customer not found" });
@@ -88,7 +85,43 @@ const addNewCardToCustomer = async (req, res) => {
   }
 };
 
+//Get list of all saved card of the customer
+const getSavedCards = async (req, res) => {
+  let cards = [];
+  try {
+    // Find the StripeCustomer using the user ID
+    const customer = await StripeCustomer.findOne({
+      user: req.id,
+    });
+    if (customer) {
+      const savedCards = await stripe.customers.listSources(
+        customer.customerId,
+        { object: "card" }
+      );
+      const cardDetails = Object.values((await savedCards).data);
+      cardDetails.forEach((cardData) => {
+        let obj = {
+          cardId: cardData.id,
+          cardType: cardData.brand,
+          cardExpDetails: `${
+            cardData.exp_month < 10
+              ? "0" + cardData.exp_month
+              : cardData.exp_month
+          }/${cardData.exp_year % 100}`,
+          cardLast4: cardData.last4,
+          cardName: cardData.name ? cardData.name : "",
+        };
+        cards.push(obj);
+      });
+      return res.status(200).json(cards);
+    }
+  } catch (error) {
+    return res.status(500).json(response);
+  }
+};
+
 module.exports = {
   createCustomer,
   addNewCardToCustomer,
+  getSavedCards,
 };
