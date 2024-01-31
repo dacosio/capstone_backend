@@ -18,12 +18,11 @@ const getAllUsers = async (req, res) => {
 
 const uploadFile = async (req, res) => {
   try {
-    const file = req.files[0];
-    const result = await s3UploadV2(file);
-    console.log(req.files);
-    res.json({ status: "success", result });
+    const results = await s3UploadV2(req.files);
+    console.log(results);
+    res.json({ status: "success", results });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error });
   }
 };
 
