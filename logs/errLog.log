@@ -1,4 +1,0 @@
-20231223	15:55:42	a2c8ca0c-5385-42d0-baa5-e2da92de560d	SyntaxError: Unexpected token } in JSON at position 64	POST	/auth/login	undefined
-20231223	16:11:10	d45b6235-527b-41fc-a110-e8b2c2adeeb1	SyntaxError: Unexpected token } in JSON at position 62	PUT	/auth/login	undefined
-20240130	16:54:25	74b7dcee-8853-4c46-80d3-3ee704615d86	MulterError: Unexpected field	POST	/api/upload	undefined
-20240130	17:22:03	81a20598-4332-450d-8150-582d59d7753f	Error: file is not of the correct type	POST	/api/upload-multi	undefined

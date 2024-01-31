@@ -4,7 +4,7 @@ const usersController = require("../controllers/usersController");
 const uploadMulterToS3 = require("../middleware/uploadTos3");
 const verifyJWT = require("../middleware/verifyJWT");
 
-// router.use(verifyJWT);
+router.use(verifyJWT);
 
 router.route("/users").get(usersController.getAllUsers);
 
