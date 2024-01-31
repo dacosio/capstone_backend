@@ -93,6 +93,7 @@ const getSavedCards = async (req, res) => {
     const customer = await StripeCustomer.findOne({
       user: req.id,
     });
+
     if (customer) {
       const savedCards = await stripe.customers.listSources(
         customer.customerId,
@@ -116,7 +117,41 @@ const getSavedCards = async (req, res) => {
       return res.status(200).json(cards);
     }
   } catch (error) {
-    return res.status(500).json(response);
+    errorHandler(error);
+    return res.status(500).json(error);
+  }
+};
+
+const chargeCard = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    // Find the StripeCustomer using the user ID
+    const customer = await StripeCustomer.findOne({
+      user: req.id,
+    });
+    const receipt = await stripe.customers.retrieve(customer.customerId);
+
+    if (amount > 0) {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Number(amount) * 100,
+        currency: "cad",
+        automatic_payment_methods: {
+          enabled: true,
+          allow_redirects: "never",
+        },
+        customer: customer.customerId,
+        description: `Stripe charge of amount $${Number(amount)} for payment`,
+        confirm: true,
+        receipt_email: receipt.email ? receipt.email : req.user,
+        // setup_future_usage: "off_session",
+      });
+
+      return res.status(200).json({ receipt: "Payment Successful!" });
+    }
+  } catch (error) {
+    errorHandler(error);
+    console.log(error);
+    return res.status(500).json(error);
   }
 };
 
@@ -124,4 +159,5 @@ module.exports = {
   createCustomer,
   addNewCardToCustomer,
   getSavedCards,
+  chargeCard,
 };
