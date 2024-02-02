@@ -1,10 +1,14 @@
-const { s3UploadV2, s3UploadV3 } = require("../aws/s3");
+const { s3UploadV3 } = require("../aws/s3");
 const User = require("../models/User");
+const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
 
 const getAllUsers = async (req, res) => {
   try {
     // lean will only save us a json data without other functions like .save() etc...
     const users = await User.find().select("-password").lean();
+
+    const base64QRCode = await generateBase64QRCode(users);
+    console.log(base64QRCode); //save the qr to users coupon purchase
 
     if (!users?.length) {
       return res.status(400).json({ message: "No users found" });
