@@ -54,7 +54,7 @@ const createCustomer = async (req, res) => {
 
 //add a new card to the customer
 const addNewCardToCustomer = async (req, res) => {
-  const { token } = req.body;
+  const { paymentMethod } = req.body;
 
   try {
     // Find the StripeCustomer using the user ID
@@ -64,8 +64,11 @@ const addNewCardToCustomer = async (req, res) => {
 
     if (customer) {
       // Create a source for the customer using the token
-      const card = await stripe.customers.createSource(customer.customerId, {
-        source: "tok_visa", //a token must be coming from the frontend using publishable key
+      // const card = await stripe.customers.create(customer.customerId, {
+      //   source: "tok_visa", //a token must be coming from the frontend using publishable key
+      // });
+      await stripe.paymentMethods.attach(paymentMethod, {
+        customer: customer.customerId,
       });
 
       return res.status(200).json({ message: "Card added successfully" });
@@ -86,7 +89,7 @@ const addNewCardToCustomer = async (req, res) => {
 };
 
 //Get list of all saved card of the customer
-const getSavedCards = async (req, res) => {
+const getCustomerPaymentMethods = async (req, res) => {
   let cards = [];
   try {
     // Find the StripeCustomer using the user ID
@@ -95,9 +98,8 @@ const getSavedCards = async (req, res) => {
     });
 
     if (customer) {
-      const savedCards = await stripe.customers.listSources(
-        customer.customerId,
-        { object: "card" }
+      const savedCards = await stripe.customers.listPaymentMethods(
+        customer.customerId
       );
       const cardDetails = Object.values((await savedCards).data);
       cardDetails.forEach((cardData) => {
@@ -143,7 +145,6 @@ const chargeCard = async (req, res) => {
         description: `Stripe charge of amount $${Number(amount)} for payment`,
         confirm: true,
         receipt_email: receipt.email ? receipt.email : req.user,
-        // setup_future_usage: "off_session",
       });
 
       return res.status(200).json({ receipt: "Payment Successful!" });
@@ -158,6 +159,6 @@ const chargeCard = async (req, res) => {
 module.exports = {
   createCustomer,
   addNewCardToCustomer,
-  getSavedCards,
+  getCustomerPaymentMethods,
   chargeCard,
 };
