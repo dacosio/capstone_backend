@@ -30,7 +30,7 @@ const errorHandler = async (err) => {
 
 const createCustomer = async (req, res) => {
   try {
-    const { payment_method, address } = req.body;
+    const { address } = req.body;
     // Create a customer
     const customer = await stripe.customers.create({
       email: req.user,
@@ -52,24 +52,44 @@ const createCustomer = async (req, res) => {
   }
 };
 
+const getCustomer = async (req, res) => {
+  try {
+    const customer = await StripeCustomer.findOne({
+      user: req.id,
+    });
+
+    if (customer) res.status(200).res.json({ customerId: customer.customerId });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 //add a new card to the customer
 const addNewCardToCustomer = async (req, res) => {
-  const { paymentMethod } = req.body;
-
   try {
+    console.log(req.body);
+    console.log("test from backend");
     // Find the StripeCustomer using the user ID
     const customer = await StripeCustomer.findOne({
       user: req.id,
     });
 
     if (customer) {
-      // Create a source for the customer using the token
-      // const card = await stripe.customers.create(customer.customerId, {
-      //   source: "tok_visa", //a token must be coming from the frontend using publishable key
+      // const data = await stripe.paymentMethods.attach(
+      //   JSON.stringify(paymentMethodId),
+      //   {
+      //     customer: customer.customerId,
+      //   }
+      // );
+      // const paymentMethod = await stripe.paymentMethods.create({
+      //   type: "card",
+      //   card: {
+      //     number: "4242424242424242",
+      //     exp_month: 8,
+      //     exp_year: 2026,
+      //     cvc: "314",
+      //   },
       // });
-      await stripe.paymentMethods.attach(paymentMethod, {
-        customer: customer.customerId,
-      });
 
       return res.status(200).json({ message: "Card added successfully" });
     } else {
@@ -161,4 +181,5 @@ module.exports = {
   addNewCardToCustomer,
   getCustomerPaymentMethods,
   chargeCard,
+  getCustomer,
 };

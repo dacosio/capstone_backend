@@ -16,7 +16,7 @@ dotenv.config();
 const PORT = process.env.PORT || 8000;
 connectDB();
 app.use(logger);
-app.use(cors(corsOptions));
+app.use(cors());
 
 // gives the ability to process json data from the frontend
 app.use(express.json());
