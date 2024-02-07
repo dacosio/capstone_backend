@@ -1,4 +1,5 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
+const { extractedInfo } = require("../helpers/stripe");
 const StripeCustomer = require("../models/StripeCustomer");
 
 const errorHandler = async (err) => {
@@ -105,24 +106,15 @@ const getCustomerPaymentMethods = async (req, res) => {
 
     if (customer) {
       const savedCards = await stripe.customers.listPaymentMethods(
-        customer.customerId
+        customer.customerId,
+        { limit: 3 }
       );
-      const cardDetails = Object.values((await savedCards).data);
-      cardDetails.forEach((cardData) => {
-        let obj = {
-          cardId: cardData.id,
-          cardType: cardData.brand,
-          cardExpDetails: `${
-            cardData.exp_month < 10
-              ? "0" + cardData.exp_month
-              : cardData.exp_month
-          }/${cardData.exp_year % 100}`,
-          cardLast4: cardData.last4,
-          cardName: cardData.name ? cardData.name : "",
-        };
-        cards.push(obj);
-      });
-      return res.status(200).json(cards);
+
+      const cardDetails = (await savedCards).data;
+
+      const data = extractedInfo(cardDetails);
+
+      return res.status(200).json(data);
     }
   } catch (error) {
     errorHandler(error);
