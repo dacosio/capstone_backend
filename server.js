@@ -11,17 +11,18 @@ const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const morgan = require("morgan");
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 connectDB();
 app.use(logger);
-app.use(cors(corsOptions));
+app.use(cors());
 
 // gives the ability to process json data from the frontend
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(morgan("dev"));
 // this is to make the public static file accessible globally, ex. public/css/style.css can be called with css/styles.css
 app.use("/", express.static(path.join(__dirname, "public")));
 
