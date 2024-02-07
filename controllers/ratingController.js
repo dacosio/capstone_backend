@@ -41,8 +41,7 @@ const getAllMerchantRatings = async (req, res) => {
 
 const addRating = async (req, res) => {
   try {
-    const { rating, comment } = req.body;
-    const { merchantId } = req.params;
+    const { rating, comment, merchantId } = req.body;
 
     if (!rating || !comment) {
       return res
