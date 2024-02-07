@@ -4,19 +4,14 @@ const Consumer = require("../models/Consumer");
 
 const getAllMerchantRatings = async (req, res) => {
   try {
-    const merchant = await Merchant.findOne({ user: req.id })
-      .populate({
-        path: "user",
-        select: "-password",
-      })
-      .lean();
+    const { merchantId } = req.body;
 
-    if (!merchant) {
+    if (!merchantId) {
       return res.status(404).json({ error: "Merchant not found" });
     }
 
     // Find all ratings for the merchant and populate merchant and consumer fields
-    const ratings = await Rating.find({ merchant: merchant._id })
+    const ratings = await Rating.find({ merchant: merchantId })
       .populate({
         path: "merchant",
         populate: { path: "user", select: "-password" },
