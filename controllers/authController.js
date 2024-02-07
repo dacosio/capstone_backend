@@ -1,12 +1,14 @@
 const User = require("../models/User");
+const Merchant = require("../models/Merchant");
 const bcrypt = require("bcryptjs");
 const { validateEmail, validateLength } = require("../helpers/validation");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 const register = async (req, res) => {
   try {
-    // remove roles if we do not need role base access system
-    const { email, password, firstName, lastName } = req.body;
+    //role has to either be consumer or merchant
+    const { email, password, firstName, lastName, role } = req.body;
 
     if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({ message: "Please provide all fields" });
@@ -38,9 +40,15 @@ const register = async (req, res) => {
       password: hashedPassword,
       firstName,
       lastName,
+      role,
     });
 
-    if (newUser) res.status(201).json({ message: `New user ${email} created` });
+    if (newUser)
+      res.status(201).json({
+        message: `New user ${newUser.email} created`,
+        userId: newUser._id,
+        role: newUser.role,
+      });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -62,13 +70,12 @@ const login = async (req, res) => {
 
     if (!match)
       return res.status(401).json({ message: "Password is incorrect." });
-    console.log(email, password);
     const accessToken = jwt.sign(
       {
         UserInfo: {
           id: foundUser._id,
           email: foundUser.email,
-          roles: foundUser.roles,
+          role: foundUser.role,
         },
       },
       process.env.ACCESS_TOKEN_SECRET,
@@ -86,6 +93,7 @@ const login = async (req, res) => {
       refreshToken,
       firstName: foundUser.firstName,
       lastName: foundUser.lastName,
+      role: foundUser.role,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -116,6 +124,7 @@ const refresh = (req, res) => {
             UserInfo: {
               id: foundUser._id,
               email: foundUser.email,
+              role: foundUser.role,
             },
           },
           process.env.ACCESS_TOKEN_SECRET,
@@ -126,6 +135,7 @@ const refresh = (req, res) => {
           accessToken,
           firstName: foundUser.firstName,
           lastName: foundUser.lastName,
+          role: foundUser.role,
         });
       }
     );
@@ -177,10 +187,48 @@ const changePassword = async (req, res) => {
   }
 };
 
+const addMerchant = async (req, res) => {
+  try {
+    const { name, description, address, opening, closing, isVerified, userId } =
+      req.body;
+
+    if (
+      !name ||
+      !address ||
+      !opening ||
+      !closing ||
+      typeof isVerified !== "boolean" ||
+      !userId
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Missing required fields in the request body" });
+    }
+
+    const newMerchant = await Merchant.create({
+      name,
+      description,
+      address,
+      opening,
+      closing,
+      isVerified,
+      user: userId,
+    });
+    if (newMerchant) {
+      res
+        .status(201)
+        .json({ message: "Merchant added successfully", newMerchant });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   refresh,
   logout,
   changePassword,
+  addMerchant,
 };

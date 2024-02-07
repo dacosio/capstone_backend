@@ -6,7 +6,8 @@ const verifyJWT = require("../middleware/verifyJWT");
 
 router.use(verifyJWT);
 
-router.route("/users").get(usersController.getAllUsers);
+router.route("/consumers").get(usersController.getAllConsumers);
+router.route("/merchants").get(usersController.getAllMerchants);
 
 //V3 s3 sdk sample endpoint that uses upload
 router
