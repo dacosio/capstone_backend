@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const CouponStatus = new mongoose.Schema(
+const Status = new mongoose.Schema(
   {
     label: {
       type: String,
@@ -16,4 +16,4 @@ const CouponStatus = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("CouponStatus", CouponStatus);
+module.exports = mongoose.model("Status", Status);
