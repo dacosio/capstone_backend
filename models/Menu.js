@@ -22,7 +22,7 @@ const MenuSchema = new mongoose.Schema(
         cuisineTypeId: {
             type: String,
         },
-        cuisineTypeId: {
+        isFeatured: {
             type: boolean,
         },
         couponId: {
