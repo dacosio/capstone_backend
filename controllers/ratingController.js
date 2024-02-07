@@ -39,6 +39,38 @@ const getAllMerchantRatings = async (req, res) => {
   }
 };
 
+const addRating = async (req, res) => {
+  try {
+    // Destructure rating details from request body
+    const { rating, comment } = req.body;
+    const { merchantId } = req.params;
+
+    // Check if rating and merchantId are provided
+    if (!rating || !comment) {
+      return res
+        .status(400)
+        .json({ message: "Rating and comment are required" });
+    }
+    //since the logged in user
+    const consumerId = req.id;
+
+    const newRating = await Rating.create({
+      rating,
+      comment,
+      consumer: consumerId,
+      merchant: merchantId,
+    });
+
+    // Respond with success message
+    res.status(201).json({ message: "Rating added successfully", newRating });
+  } catch (error) {
+    // Handle any errors during rating creation
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   getAllMerchantRatings,
+  addRating,
 };

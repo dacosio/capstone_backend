@@ -63,21 +63,33 @@ const login = async (req, res) => {
 
     const foundUser = await User.findOne({ email }).exec();
     if (!foundUser) {
-      return res.status(401).json({ message: "Email does not exists." });
+      return res.status(401).json({ message: "Email does not exist." });
     }
 
     const match = await bcrypt.compare(password, foundUser.password);
 
-    if (!match)
+    if (!match) {
       return res.status(401).json({ message: "Password is incorrect." });
-    const accessToken = jwt.sign(
-      {
-        UserInfo: {
-          id: foundUser._id,
-          email: foundUser.email,
-          role: foundUser.role,
-        },
+    }
+
+    const accessTokenPayload = {
+      UserInfo: {
+        id: foundUser._id,
+        email: foundUser.email,
+        role: foundUser.role,
       },
+    };
+
+    if (foundUser.role === "consumer") {
+      const consumer = await Consumer.findOne({ user: foundUser._id }).exec();
+      accessTokenPayload.UserInfo.consumerId = consumer ? consumer._id : null;
+    } else if (foundUser.role === "merchant") {
+      const merchant = await Merchant.findOne({ user: foundUser._id }).exec();
+      accessTokenPayload.UserInfo.merchantId = merchant ? merchant._id : null;
+    }
+
+    const accessToken = jwt.sign(
+      accessTokenPayload,
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "5d" }
     );
@@ -94,6 +106,8 @@ const login = async (req, res) => {
       firstName: foundUser.firstName,
       lastName: foundUser.lastName,
       role: foundUser.role,
+      consumerId: accessTokenPayload.UserInfo.consumerId,
+      merchantId: accessTokenPayload.UserInfo.merchantId,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

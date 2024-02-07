@@ -12,6 +12,12 @@ const verifyJWT = (req, res, next) => {
     req.id = decoded.UserInfo.id;
     req.user = decoded.UserInfo.email;
     req.role = decoded.UserInfo.role;
+
+    if (req.role == "consumer") {
+      req.consumerId = decoded.UserInfo.consumerId;
+    } else if (req.role === "merchant") {
+      req.merchantId = decoded.UserInfo.merchantId;
+    }
     next();
   });
 };
