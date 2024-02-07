@@ -67,29 +67,15 @@ const getCustomer = async (req, res) => {
 //add a new card to the customer
 const addNewCardToCustomer = async (req, res) => {
   try {
-    console.log(req.body);
-    console.log("test from backend");
+    const { paymentMethodId } = req.body;
     // Find the StripeCustomer using the user ID
     const customer = await StripeCustomer.findOne({
       user: req.id,
     });
-
     if (customer) {
-      // const data = await stripe.paymentMethods.attach(
-      //   JSON.stringify(paymentMethodId),
-      //   {
-      //     customer: customer.customerId,
-      //   }
-      // );
-      // const paymentMethod = await stripe.paymentMethods.create({
-      //   type: "card",
-      //   card: {
-      //     number: "4242424242424242",
-      //     exp_month: 8,
-      //     exp_year: 2026,
-      //     cvc: "314",
-      //   },
-      // });
+      await stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customer.customerId,
+      });
 
       return res.status(200).json({ message: "Card added successfully" });
     } else {
