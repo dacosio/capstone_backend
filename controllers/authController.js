@@ -1,9 +1,9 @@
 const User = require("../models/User");
 const Merchant = require("../models/Merchant");
+const Consumer = require("../models/Consumer");
 const bcrypt = require("bcryptjs");
 const { validateEmail, validateLength } = require("../helpers/validation");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 
 const register = async (req, res) => {
   try {
@@ -205,6 +205,12 @@ const addMerchant = async (req, res) => {
         .json({ message: "Missing required fields in the request body" });
     }
 
+    const existingUser = await User.findOne({ _id: userId });
+    if (!existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User with the provided userId does not exist" });
+    }
     const newMerchant = await Merchant.create({
       name,
       description,
@@ -224,6 +230,33 @@ const addMerchant = async (req, res) => {
   }
 };
 
+const addConsumer = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const existingUser = await User.findOne({ _id: userId });
+    if (!existingUser) {
+      return res
+        .status(400)
+        .json({ message: "User with the provided userId does not exist" });
+    }
+
+    const newConsumer = await Consumer.create({ user: userId });
+
+    res
+      .status(201)
+      .json({ message: "Consumer added successfully", newConsumer });
+  } catch (error) {
+    // Handle any errors during consumer creation
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -231,4 +264,5 @@ module.exports = {
   logout,
   changePassword,
   addMerchant,
+  addConsumer,
 };
