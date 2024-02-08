@@ -12,4 +12,7 @@ router.route("/refresh").post(authController.refresh);
 
 router.route("/logout").post(authController.logout);
 
+router.route("/merchant").post(authController.addMerchant);
+router.route("/consumer").post(authController.addConsumer);
+
 module.exports = router;

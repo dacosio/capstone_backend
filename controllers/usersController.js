@@ -1,22 +1,42 @@
 const { s3UploadV3 } = require("../aws/s3");
-const User = require("../models/User");
-const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
+const Consumer = require("../models/Consumer");
+const Merchant = require("../models/Merchant");
 
-const getAllUsers = async (req, res) => {
+const getAllConsumers = async (req, res) => {
   try {
-    // lean will only save us a json data without other functions like .save() etc...
-    const users = await User.find().select("-password").lean();
+    const consumers = await Consumer.find()
+      .populate({
+        path: "user",
+        select: "-password",
+      })
+      .lean();
 
-    const base64QRCode = await generateBase64QRCode(users);
-    console.log(base64QRCode); //save the qr to users coupon purchase
-
-    if (!users?.length) {
-      return res.status(400).json({ message: "No users found" });
+    if (!consumers?.length) {
+      return res.status(400).json({ message: "No consumers found" });
     }
 
-    res.status(200).json(users);
+    res.status(200).json(consumers);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getAllMerchants = async (req, res) => {
+  try {
+    const merchants = await Merchant.find()
+      .populate({
+        path: "user",
+        select: "-password",
+      })
+      .lean();
+
+    if (!merchants?.length) {
+      return res.status(400).json({ message: "No merchants found" });
+    }
+
+    res.status(200).json(merchants);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -31,6 +51,7 @@ const uploadFile = async (req, res) => {
 };
 
 module.exports = {
-  getAllUsers,
+  getAllConsumers,
+  getAllMerchants,
   uploadFile,
 };
