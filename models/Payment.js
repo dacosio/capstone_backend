@@ -6,7 +6,7 @@ const PaymentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    paymentDate: {
+    date: {
       type: Date,
       required: true,
     },

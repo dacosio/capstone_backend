@@ -16,10 +16,14 @@ const ConsumerCouponSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    qrIdentification: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
       required: true,
-      enum: ["active", "removed", "expired"],
+      enum: ["active", "removed", "canceled", "expired"],
     },
   },
   {
