@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const TransactionSchema = new mongoose.Schema(
   {
-    paymentId: {
+    payment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment",
       required: true,
     },
-    consumerCouponId: {
+    consumerCoupon: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ConsumerCoupon",
       required: true,

@@ -42,8 +42,8 @@ const addConsumerCoupon = async (req, res) => {
     const { couponId } = req.body;
 
     const newConsumerCoupon = await ConsumerCoupon.create({
-      consumerId,
-      couponId,
+      consumer: consumerId,
+      coupon: couponId,
       qrCode: "",
       qrIdentification: "",
       status: "active",

@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 
 const ConsumerCouponSchema = new mongoose.Schema(
   {
-    consumerId: {
+    consumer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Consumer",
       required: true,
     },
-    couponId: {
+    coupon: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Coupon",
       required: true,
