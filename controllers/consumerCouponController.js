@@ -5,7 +5,7 @@ const getAllConsumerCoupons = async (req, res) => {
     const consumerId = req.consumerId;
 
     if (!consumerId) {
-      return res.status(404).json({ error: "Coupon not found" });
+      return res.status(404).json({ error: "Consumer not found" });
     }
 
     // Find all consumerCoupons for the consumer and populate consumer and coupon fields
