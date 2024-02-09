@@ -5,6 +5,7 @@ const consumerCouponController = require("../controllers/consumerCouponControlle
 router
   .route("/consumerCoupon")
   .get(consumerCouponController.getAllConsumerCoupons)
-  .post(consumerCouponController.addConsumerCoupon);
+  .post(consumerCouponController.addConsumerCoupon)
+  .put(consumerCouponController.updateConsumerCoupon);
 
 module.exports = router;
