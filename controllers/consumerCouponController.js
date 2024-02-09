@@ -8,7 +8,7 @@ const getAllConsumerCoupons = async (req, res) => {
       return res.status(404).json({ error: "Consumer not found" });
     }
 
-    // Find all consumerCoupons for the consumer and populate consumer and coupon fields
+    // Find all consumer coupons for the consumer and populate consumer and coupon fields
     const consumerCoupons = await ConsumerCoupon.find({ consumer: consumerId })
       .populate({
         path: "consumer",
@@ -26,8 +26,8 @@ const getAllConsumerCoupons = async (req, res) => {
       // })
       .lean();
 
-    // Return the consumerCoupons
-    res.json({ consumerCoupons: consumerCoupons });
+    // Return the cnsumerCoupons
+    res.json({ consumerCoupons });
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -46,7 +46,7 @@ const addConsumerCoupon = async (req, res) => {
     const { couponId } = req.body;
 
     if (!couponId) {
-      return res.status(400).json({ message: "CouponId is required" });
+      return res.status(400).json({ message: "couponId is required" });
     }
 
     const newConsumerCoupon = await ConsumerCoupon.create({
@@ -58,7 +58,7 @@ const addConsumerCoupon = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "ConsumerCoupon added successfully",
+      message: "Consumer coupon added successfully",
       newConsumerCoupon,
     });
   } catch (error) {
@@ -73,6 +73,7 @@ const updateConsumerCoupon = async (req, res) => {
 
     if (
       !consumerCouponId ||
+      !status ||
       !["active", "removed", "canceled", "expired"].includes(status)
     ) {
       return res
@@ -85,7 +86,7 @@ const updateConsumerCoupon = async (req, res) => {
     ).exec();
 
     if (!consumerCoupon) {
-      return res.status(400).json({ message: "ConsumerCoupon not found" });
+      return res.status(400).json({ message: "Consumer coupon not found" });
     }
 
     consumerCoupon.status = status;
@@ -95,7 +96,7 @@ const updateConsumerCoupon = async (req, res) => {
     if (updatedConsumerCoupon)
       res
         .status(200)
-        .json({ message: `Status for ConsumerCoupon has been updated` });
+        .json({ message: `Status for the consumer coupon has been updated` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
