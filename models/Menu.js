@@ -2,31 +2,32 @@ const mongoose = require("mongoose");
 
 const MenuSchema = new mongoose.Schema(
     {
-        itemImage: {
+        imageUrl: {
             type: String,
             required: true,
         },
-        itemName: {
+        name: {
             type: String,
             required: true,
         },
         orginalPrice: {
             type: String,
         },
-        itemDescription: {
+        description: {
             type: String,
         },
         merchantId: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Merchant",
+            required: true,
         },
         cuisineTypeId: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "CuisineType",
+            required: true,
         },
         isFeatured: {
             type: Boolean,
-        },
-        couponId: {
-            type: String,
         },
     },
     {
