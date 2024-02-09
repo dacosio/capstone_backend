@@ -14,16 +14,16 @@ const getAllConsumerCoupons = async (req, res) => {
         path: "consumer",
         populate: { path: "user", select: "-password" },
       })
-      .populate({
-        path: "coupon",
-        populate: {
-          path: "merchant",
-          populate: {
-            path: "user",
-            select: "-password",
-          },
-        },
-      })
+      // .populate({
+      //   path: "coupon",
+      //   populate: {
+      //     path: "merchant",
+      //     populate: {
+      //       path: "user",
+      //       select: "-password",
+      //     },
+      //   },
+      // })
       .lean();
 
     // Return the consumerCoupons
@@ -93,7 +93,9 @@ const updateConsumerCoupon = async (req, res) => {
     const updatedConsumerCoupon = await consumerCoupon.save();
 
     if (updatedConsumerCoupon)
-      res.status(200).json({ message: `Status for has been updated` });
+      res
+        .status(200)
+        .json({ message: `Status for ConsumerCoupon has been updated` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
