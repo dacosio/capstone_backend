@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const Transaction = require("../models/Transaction");
 const Payment = require("../models/Payment");
 
@@ -33,6 +35,9 @@ const getAllTransactions = async (req, res) => {
 
 const createTransaction = async (req, res) => {
   try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     const { amount, status, consumerCouponId } = req.body;
 
     if (
@@ -46,16 +51,29 @@ const createTransaction = async (req, res) => {
         .json({ message: "amount, status, and consumerCouponId are required" });
     }
 
-    const newPayment = await Payment.create({
-      amount,
-      date: new Date(),
-      status,
-    });
+    const newPayment = await Payment.create(
+      [
+        {
+          amount,
+          date: new Date(),
+          status,
+        },
+      ],
+      { session }
+    );
 
-    const newTransaction = await Transaction.create({
-      payment: newPayment.id,
-      consumerCoupon: consumerCouponId,
-    });
+    const newTransaction = await Transaction.create(
+      [
+        {
+          payment: newPayment[0].id,
+          consumerCoupon: consumerCouponId,
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(201).json({
       message: "Transaction created successfully",

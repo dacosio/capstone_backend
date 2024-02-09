@@ -1,3 +1,5 @@
+const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
+
 const ConsumerCoupon = require("../models/ConsumerCoupon");
 
 const getAllConsumerCoupons = async (req, res) => {
@@ -26,8 +28,12 @@ const getAllConsumerCoupons = async (req, res) => {
       // })
       .lean();
 
-    // Return the cnsumerCoupons
-    res.json({ consumerCoupons });
+    if (!consumerCoupons?.length) {
+      return res.status(400).json({ message: "No consumer coupons found" });
+    }
+
+    // Return the consumer coupons
+    res.status(200).json(consumerCoupons);
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -40,7 +46,9 @@ const addConsumerCoupon = async (req, res) => {
     const consumerId = req.consumerId;
 
     if (!consumerId) {
-      return res.status(404).json({ error: "Consumer not found" });
+      return res
+        .status(404)
+        .json({ error: "Consumer not found. Please log in" });
     }
 
     const { couponId } = req.body;
@@ -49,11 +57,42 @@ const addConsumerCoupon = async (req, res) => {
       return res.status(400).json({ message: "couponId is required" });
     }
 
+    const qrCode = await generateBase64QRCode({
+      consumer: consumerId,
+      coupon: couponId,
+    });
+
+    const qrIdentifications = await ConsumerCoupon.find(
+      {},
+      { _id: 0, qrIdentification: 1 }
+    );
+
+    let qrIdentification;
+    while (true) {
+      qrIdentification = "";
+
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (let i = 0; i < 6; i++) {
+        const index = Math.floor(Math.random() * characters.length);
+        qrIdentification += characters[index];
+      }
+
+      if (
+        !qrIdentifications
+          .map((qrIdentificationItem) => qrIdentificationItem.qrIdentification)
+          .includes(qrIdentification)
+      ) {
+        break;
+      }
+    }
+
     const newConsumerCoupon = await ConsumerCoupon.create({
       consumer: consumerId,
       coupon: couponId,
-      qrCode: "qrCode",
-      qrIdentification: "qrIdentification",
+      qrCode,
+      qrIdentification,
       status: "active",
     });
 
@@ -81,22 +120,18 @@ const updateConsumerCoupon = async (req, res) => {
         .json({ message: "consumerCouponId and status are required" });
     }
 
-    const consumerCoupon = await ConsumerCoupon.findById(
-      consumerCouponId
+    const updatedConsumerCoupon = await ConsumerCoupon.findByIdAndUpdate(
+      consumerCouponId,
+      { $set: { status: status } }
     ).exec();
 
-    if (!consumerCoupon) {
-      return res.status(400).json({ message: "Consumer coupon not found" });
+    if (updatedConsumerCoupon) {
+      res.status(200).json({
+        message: `Status for the consumer coupon has been updated to ${status}`,
+      });
+    } else {
+      res.status(400).json({ message: "Consumer coupon not found" });
     }
-
-    consumerCoupon.status = status;
-
-    const updatedConsumerCoupon = await consumerCoupon.save();
-
-    if (updatedConsumerCoupon)
-      res
-        .status(200)
-        .json({ message: `Status for the consumer coupon has been updated` });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

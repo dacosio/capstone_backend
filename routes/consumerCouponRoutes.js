@@ -3,7 +3,7 @@ const router = express.Router();
 const consumerCouponController = require("../controllers/consumerCouponController");
 
 router
-  .route("/consumerCoupon")
+  .route("/consumer-coupon")
   .get(consumerCouponController.getAllConsumerCoupons)
   .post(consumerCouponController.addConsumerCoupon)
   .put(consumerCouponController.updateConsumerCoupon);
