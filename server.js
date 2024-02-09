@@ -1,5 +1,4 @@
 const dotenv = require("dotenv");
-// require("./services/scheduler");
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -16,8 +15,6 @@ const PORT = process.env.PORT || 8000;
 connectDB();
 app.use(logger);
 app.use(cors());
-
-// i am a comment
 
 // gives the ability to process json data from the frontend
 app.use(express.json());
