@@ -62,7 +62,7 @@ const login = async (req, res) => {
 
     if (!match)
       return res.status(401).json({ message: "Password is incorrect." });
-
+    console.log(email, password);
     const accessToken = jwt.sign(
       {
         UserInfo: {
@@ -144,6 +144,7 @@ const logout = (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
+    console.log("test")
 
     if (!email || !currentPassword || !newPassword) {
       return res.status(400).json({ message: "Please provide all fields" });

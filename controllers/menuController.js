@@ -1,27 +1,35 @@
 const Menu = require("./../models/Menu");
 const jwt = require("jsonwebtoken");
 
-const check = await User.findOne({ email }).lean().exec();
 
-if (check) {
-    return res.status(400).json({
-        message:
-            "The email address already exists, try with a different email address.",
-    });
-}
+// const checkEmail = async (email) => {
+//     const check = await User.findOne({ email }).lean().exec();
+
+//     if (check) {
+//         return res.status(400).json({
+//             message:
+//                 "The email address already exists, try with a different email address.",
+//         });
+//     }
+// }
 
 
 // Get all menu item
 
 const getAllMenu = async (req, res) => {
     try {
-        const allMenuItems = await Menu.find();
+        // checkEmail();
+        // const allMenuItems = await Menu.find();
 
-        if (!allMenuItems?.length) {
-            return res.status(400).json({ message: "No menu available" });
-        }
+        console.log(req.user)
 
-        res.status(200).json({ success: true, data: allMenuItems });
+        // if (!allMenuItems?.length) {
+        //     return res.status(400).json({ message: "No menu available" });
+        // }
+
+        res.status(200).json({ success: true, data: [] });
+
+        // res.status(200).json({ success: true, data: allMenuItems });
 
     } catch (error) {
         console.error('Error getting all menu items:', error);
@@ -36,6 +44,7 @@ const getAllMenu = async (req, res) => {
 const addMenuItem = async (req, res) => {
     try {
 
+        // checkEmail();
         const {
             itemImage,
             itemName,
@@ -73,6 +82,7 @@ const addMenuItem = async (req, res) => {
 const deleteMenuItem = async (req, res) => {
     try {
 
+        checkEmail();
         const { id } = req.params;
 
         const deletedMenuItem = await Menu.findByIdAndDelete(id);

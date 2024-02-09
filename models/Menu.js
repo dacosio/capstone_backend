@@ -23,7 +23,7 @@ const MenuSchema = new mongoose.Schema(
             type: String,
         },
         isFeatured: {
-            type: boolean,
+            type: Boolean,
         },
         couponId: {
             type: String,

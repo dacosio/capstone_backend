@@ -11,17 +11,18 @@ const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const morgan = require("morgan");
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 connectDB();
 app.use(logger);
-app.use(cors(corsOptions));
+app.use(cors());
 
 // gives the ability to process json data from the frontend
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(morgan("dev"));
 // this is to make the public static file accessible globally, ex. public/css/style.css can be called with css/styles.css
 app.use("/", express.static(path.join(__dirname, "public")));
 
@@ -29,6 +30,7 @@ app.use("/", require("./routes/root"));
 app.use("/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/userRoutes"));
 app.use("/api", require("./routes/stripeRoutes"));
+app.use("/api", require("./routes/menuRoutes"));
 
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {

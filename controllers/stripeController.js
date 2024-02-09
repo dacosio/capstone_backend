@@ -1,4 +1,5 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
+const { extractedInfo } = require("../helpers/stripe");
 const StripeCustomer = require("../models/StripeCustomer");
 
 const errorHandler = async (err) => {
@@ -30,7 +31,7 @@ const errorHandler = async (err) => {
 
 const createCustomer = async (req, res) => {
   try {
-    const { payment_method, address } = req.body;
+    const { address } = req.body;
     // Create a customer
     const customer = await stripe.customers.create({
       email: req.user,
@@ -52,20 +53,29 @@ const createCustomer = async (req, res) => {
   }
 };
 
-//add a new card to the customer
-const addNewCardToCustomer = async (req, res) => {
-  const { token } = req.body;
-
+const getCustomer = async (req, res) => {
   try {
-    // Find the StripeCustomer using the user ID
     const customer = await StripeCustomer.findOne({
       user: req.id,
     });
 
+    if (customer) res.status(200).res.json({ customerId: customer.customerId });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+//add a new card to the customer
+const addNewCardToCustomer = async (req, res) => {
+  try {
+    const { paymentMethodId } = req.body;
+    // Find the StripeCustomer using the user ID
+    const customer = await StripeCustomer.findOne({
+      user: req.id,
+    });
     if (customer) {
-      // Create a source for the customer using the token
-      const card = await stripe.customers.createSource(customer.customerId, {
-        source: "tok_visa", //a token must be coming from the frontend using publishable key
+      await stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customer.customerId,
       });
 
       return res.status(200).json({ message: "Card added successfully" });
@@ -86,7 +96,7 @@ const addNewCardToCustomer = async (req, res) => {
 };
 
 //Get list of all saved card of the customer
-const getSavedCards = async (req, res) => {
+const getCustomerPaymentMethods = async (req, res) => {
   let cards = [];
   try {
     // Find the StripeCustomer using the user ID
@@ -95,26 +105,16 @@ const getSavedCards = async (req, res) => {
     });
 
     if (customer) {
-      const savedCards = await stripe.customers.listSources(
+      const savedCards = await stripe.customers.listPaymentMethods(
         customer.customerId,
-        { object: "card" }
+        { limit: 3 }
       );
-      const cardDetails = Object.values((await savedCards).data);
-      cardDetails.forEach((cardData) => {
-        let obj = {
-          cardId: cardData.id,
-          cardType: cardData.brand,
-          cardExpDetails: `${
-            cardData.exp_month < 10
-              ? "0" + cardData.exp_month
-              : cardData.exp_month
-          }/${cardData.exp_year % 100}`,
-          cardLast4: cardData.last4,
-          cardName: cardData.name ? cardData.name : "",
-        };
-        cards.push(obj);
-      });
-      return res.status(200).json(cards);
+
+      const cardDetails = (await savedCards).data;
+
+      const data = extractedInfo(cardDetails);
+
+      return res.status(200).json(data);
     }
   } catch (error) {
     errorHandler(error);
@@ -143,7 +143,6 @@ const chargeCard = async (req, res) => {
         description: `Stripe charge of amount $${Number(amount)} for payment`,
         confirm: true,
         receipt_email: receipt.email ? receipt.email : req.user,
-        // setup_future_usage: "off_session",
       });
 
       return res.status(200).json({ receipt: "Payment Successful!" });
@@ -158,6 +157,7 @@ const chargeCard = async (req, res) => {
 module.exports = {
   createCustomer,
   addNewCardToCustomer,
-  getSavedCards,
+  getCustomerPaymentMethods,
   chargeCard,
+  getCustomer,
 };
