@@ -6,10 +6,6 @@ const PaymentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    amount: {
-      type: Number,
-      required: true,
-    },
     paymentDate: {
       type: Date,
       required: true,
@@ -17,7 +13,7 @@ const PaymentSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: [],
+      enum: ["approved", "canceled"],
     },
   },
   {

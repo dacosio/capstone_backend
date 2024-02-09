@@ -19,7 +19,7 @@ const ConsumerCouponSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: [],
+      enum: ["active", "removed", "expired"],
     },
   },
   {
