@@ -39,13 +39,21 @@ const addConsumerCoupon = async (req, res) => {
   try {
     const consumerId = req.consumerId;
 
+    if (!consumerId) {
+      return res.status(404).json({ error: "Consumer not found" });
+    }
+
     const { couponId } = req.body;
+
+    if (!couponId) {
+      return res.status(400).json({ message: "CouponId is required" });
+    }
 
     const newConsumerCoupon = await ConsumerCoupon.create({
       consumer: consumerId,
       coupon: couponId,
-      qrCode: "",
-      qrIdentification: "",
+      qrCode: "qrCode",
+      qrIdentification: "qrIdentification",
       status: "active",
     });
 
