@@ -17,6 +17,8 @@ connectDB();
 app.use(logger);
 app.use(cors());
 
+// i am a comment
+
 // gives the ability to process json data from the frontend
 app.use(express.json());
 app.use(cookieParser());
