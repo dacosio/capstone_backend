@@ -5,6 +5,8 @@ const path = require("path");
 const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
+
+// comment
 const cors = require("cors");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
