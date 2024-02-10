@@ -1,18 +1,23 @@
 const dotenv = require("dotenv");
-// require("./services/scheduler");
 const express = require("express");
 const app = express();
 const path = require("path");
 const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
+
+/*
+@Guia Remove some semicolons and change the double quite to single quote
+git add . then git commi -m 'message'.
+
+You will see it fix the file.
+*/
+
 const cors = require("cors");
-const corsOptions = require("./config/corsOptions");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const morgan = require("morgan");
-
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 connectDB();
@@ -33,54 +38,55 @@ app.use("/api", require("./routes/stripeRoutes"));
 app.use("/api", require("./routes/ratingRoutes"));
 app.use("/api", require("./routes/consumerDiscountRoutes"));
 app.use("/api", require("./routes/transactionRoutes"));
+app.use("/api", require("./routes/menuRoutes"));
 
 app.use((error, req, res, next) => {
-  if (error instanceof multer.MulterError) {
-    if (error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({
-        message: "File is too large",
-      });
+    if (error instanceof multer.MulterError) {
+        if (error.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({
+                message: "File is too large",
+            });
+        }
+        if (error.code === "LIMIT_FILE_COUNT") {
+            return res.status(400).json({
+                message: "File limit reached.",
+            });
+        }
+        if (error.code === "LIMIT_UNEXPECTED_FILE") {
+            return res.status(400).json({
+                message: "File must be an image.",
+            });
+        }
     }
-    if (error.code === "LIMIT_FILE_COUNT") {
-      return res.status(400).json({
-        message: "File limit reached.",
-      });
-    }
-    if (error.code === "LIMIT_UNEXPECTED_FILE") {
-      return res.status(400).json({
-        message: "File must be an image.",
-      });
-    }
-  }
 });
 app.all("*", (req, res) => {
-  res.status(404);
-  if (req.accepts("html")) {
-    res.sendFile(path.join(__dirname, "views", "404.html"));
-  } else if (req.accepts("json")) {
-    res.json({ message: "404 Not Found" });
-  } else {
-    res.type("txt").send("404 Not Found");
-  }
+    res.status(404);
+    if (req.accepts("html")) {
+        res.sendFile(path.join(__dirname, "views", "404.html"));
+    } else if (req.accepts("json")) {
+        res.json({ message: "404 Not Found" });
+    } else {
+        res.type("txt").send("404 Not Found");
+    }
 });
 // this middleware will catch whenever our routes/controllers has an error
 app.use(errorHandler);
 
-//this is executed once when the connection is successful
+// this is executed once when the connection is successful
 mongoose.connection.once("open", () => {
-  console.log("Connected to Database");
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+    console.log("Connected to Database");
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 });
 
-//this is executed once when an error occurs
+// this is executed once when an error occurs
 mongoose.connection.on("error", (err) => {
-  console.log(err);
-  logEvents(
-    `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
-    "mongoErrLog.log"
-  );
+    console.log(err);
+    logEvents(
+        `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
+        "mongoErrLog.log"
+    );
 });
 
 module.exports = app;
