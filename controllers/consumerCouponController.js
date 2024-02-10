@@ -1,13 +1,16 @@
 const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
 
 const ConsumerCoupon = require("../models/ConsumerCoupon");
+// const Coupon = require("../models/Coupon");
 
 const getAllConsumerCoupons = async (req, res) => {
   try {
     const consumerId = req.consumerId;
 
     if (!consumerId) {
-      return res.status(404).json({ error: "Consumer not found" });
+      return res
+        .status(404)
+        .json({ error: "Consumer not found. Please log in" });
     }
 
     // Find all consumer coupons for the consumer and populate consumer and coupon fields
@@ -56,6 +59,12 @@ const addConsumerCoupon = async (req, res) => {
     if (!couponId) {
       return res.status(400).json({ message: "couponId is required" });
     }
+
+    // const coupon = await Coupon.findOne(couponId).exec();
+
+    // if (!coupon) {
+    //   return res.status(404).json({ message: "Coupon not found" });
+    // }
 
     const qrCode = await generateBase64QRCode({
       consumer: consumerId,

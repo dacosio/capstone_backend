@@ -5,6 +5,6 @@ const transactionController = require("../controllers/transactionController");
 router
   .route("/transaction")
   .get(transactionController.getAllTransactions)
-  .post(transactionController.createTransaction);
+  .post(transactionController.addTransaction);
 
 module.exports = router;

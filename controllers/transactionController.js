@@ -25,7 +25,7 @@ const getAllTransactions = async (req, res) => {
       .lean();
 
     // Return the transactions
-    res.json({ transactions });
+    res.status(200).json(transactions);
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -33,7 +33,7 @@ const getAllTransactions = async (req, res) => {
   }
 };
 
-const createTransaction = async (req, res) => {
+const addTransaction = async (req, res) => {
   try {
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -76,7 +76,7 @@ const createTransaction = async (req, res) => {
     session.endSession();
 
     res.status(201).json({
-      message: "Transaction created successfully",
+      message: "Transaction added successfully",
       newPayment,
       newTransaction,
     });
@@ -88,5 +88,5 @@ const createTransaction = async (req, res) => {
 
 module.exports = {
   getAllTransactions,
-  createTransaction,
+  addTransaction,
 };
