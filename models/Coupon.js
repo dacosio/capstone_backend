@@ -11,7 +11,7 @@ const CouponSchema = new mongoose.Schema(
             required: true,
         },
         percentDiscount: {
-            type: Schema.Types.Decimal128,
+            type: mongoose.Schema.Types.Decimal128,
             required: true,
         },
         imageUrl: {
@@ -27,11 +27,11 @@ const CouponSchema = new mongoose.Schema(
             required: true,
         },
         validFromTime: {
-            type: Timestamp,
+            type: Date,
             required: true
         },
         validToTime: {
-            type: Timestamp,
+            type: Date,
             required: true,
         }, 
         merchantId: {
@@ -39,11 +39,6 @@ const CouponSchema = new mongoose.Schema(
             ref: "Merchant",
             required: true,
         },
-        couponStatusId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "CouponStatus",
-            required: true,
-        }
     },
     {
         timestamps: true,
