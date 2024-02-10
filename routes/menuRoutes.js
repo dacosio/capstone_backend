@@ -8,9 +8,8 @@ router.use(verifyJWT);
 router
     .route("/menu")
     .get(menuController.getAllMenu)
-    .post(menuController.addMenuItem)
+    .post(menuController.addMenuItem);
 
-router.route("/menu/:id")
-    .delete(menuController.deleteMenuItem);
+router.route("/menu/:id").delete(menuController.deleteMenuItem);
 
 module.exports = router;

@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
-const ConsumerCouponSchema = new mongoose.Schema(
+const ConsumerDiscountSchema = new mongoose.Schema(
   {
-    consumerId: {
+    consumer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Consumer",
       required: true,
     },
-    couponId: {
+    discount: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Coupon",
+      ref: "Discount",
       required: true,
     },
     qrCode: {
@@ -31,4 +31,4 @@ const ConsumerCouponSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("ConsumerCoupon", ConsumerCouponSchema);
+module.exports = mongoose.model("ConsumerDiscount", ConsumerDiscountSchema);
