@@ -24,7 +24,7 @@ const MenuSchema = new mongoose.Schema(
         cuisineTypeId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "CuisineType",
-            required: true,
+            // required: true,
         },
         isFeatured: {
             type: Boolean,

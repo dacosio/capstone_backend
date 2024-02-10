@@ -5,6 +5,12 @@ const verifyJWT = require("../middleware/verifyJWT");
 
 router.use(verifyJWT);
 
-router.route("/menu").get(menuController.getAllMenu).post(menuController.addMenuItem).delete(menuController.deleteMenuItem);
+router
+    .route("/menu")
+    .get(menuController.getAllMenu)
+    .post(menuController.addMenuItem)
+
+router.route("/menu/:id")
+    .delete(menuController.deleteMenuItem);
 
 module.exports = router;
