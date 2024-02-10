@@ -6,7 +6,13 @@ const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 
-// comment
+/*
+@Guia Remove some semicolons and change the double quite to single quote
+git add . then git commi -m 'message'.
+
+You will see it fix the file.
+*/
+
 const cors = require("cors");
 const connectDB = require("./config/dbConn");
 const mongoose = require("mongoose");
