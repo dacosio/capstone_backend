@@ -17,6 +17,7 @@ const addDiscount = async(req, res) => {
             label, 
             description, 
             percentDiscount, 
+            //imageUrl,
             validFrom, 
             validTo,
             merchantId: merchantId,
