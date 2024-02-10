@@ -5,22 +5,24 @@ const Payment = require("../models/Payment");
 
 const getAllTransactions = async (req, res) => {
   try {
-    const { consumerCouponId } = req.body;
+    const { consumerDiscountId } = req.body;
 
-    if (!consumerCouponId) {
-      return res.status(400).json({ message: "consumerCouponId is required" });
+    if (!consumerDiscountId) {
+      return res
+        .status(400)
+        .json({ message: "consumerDiscountId is required" });
     }
 
-    // Find all transactions for the consumer coupon and populate payment and consumerCoupon fields
+    // Find all transactions for the consumer discount and populate payment and consumerDiscount fields
     const transactions = await Transaction.find({
-      consumerCoupon: consumerCouponId,
+      consumerDiscount: consumerDiscountId,
     })
       .populate({
         path: "payment",
       })
       .populate({
-        path: "consumerCoupon",
-        // populate: { path: "coupon"},
+        path: "consumerDiscount",
+        // populate: { path: "discount"},
       })
       .lean();
 
@@ -38,17 +40,17 @@ const addTransaction = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
-    const { amount, status, consumerCouponId } = req.body;
+    const { amount, status, consumerDiscountId } = req.body;
 
     if (
       !amount ||
       !status ||
       !["approved", "canceled"].includes(status) ||
-      !consumerCouponId
+      !consumerDiscountId
     ) {
-      return res
-        .status(400)
-        .json({ message: "amount, status, and consumerCouponId are required" });
+      return res.status(400).json({
+        message: "amount, status, and consumerDiscountId are required",
+      });
     }
 
     const newPayment = await Payment.create(
@@ -66,7 +68,7 @@ const addTransaction = async (req, res) => {
       [
         {
           payment: newPayment[0].id,
-          consumerCoupon: consumerCouponId,
+          consumerDiscount: consumerDiscountId,
         },
       ],
       { session }

@@ -31,7 +31,7 @@ app.use("/auth", require("./routes/authRoutes"));
 app.use("/api", require("./routes/userRoutes"));
 app.use("/api", require("./routes/stripeRoutes"));
 app.use("/api", require("./routes/ratingRoutes"));
-app.use("/api", require("./routes/consumerCouponRoutes"));
+app.use("/api", require("./routes/consumerDiscountRoutes"));
 app.use("/api", require("./routes/transactionRoutes"));
 
 app.use((error, req, res, next) => {

@@ -7,9 +7,9 @@ const TransactionSchema = new mongoose.Schema(
       ref: "Payment",
       required: true,
     },
-    consumerCoupon: {
+    consumerDiscount: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ConsumerCoupon",
+      ref: "ConsumerDiscount",
       required: true,
     },
   },
