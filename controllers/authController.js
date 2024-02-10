@@ -168,6 +168,7 @@ const logout = (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { email, currentPassword, newPassword } = req.body;
+    console.log("test")
 
     if (!email || !currentPassword || !newPassword) {
       return res.status(400).json({ message: "Please provide all fields" });
