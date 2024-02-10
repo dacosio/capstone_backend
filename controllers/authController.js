@@ -235,20 +235,16 @@ const addMerchant = async (req, res) => {
             typeof isVerified !== "boolean" ||
             !userId
         ) {
-            return res
-                .status(400)
-                .json({
-                    message: "Missing required fields in the request body",
-                });
+            return res.status(400).json({
+                message: "Missing required fields in the request body",
+            });
         }
 
         const existingUser = await User.findOne({ _id: userId });
         if (!existingUser) {
-            return res
-                .status(400)
-                .json({
-                    message: "User with the provided userId does not exist",
-                });
+            return res.status(400).json({
+                message: "User with the provided userId does not exist",
+            });
         }
         const newMerchant = await Merchant.create({
             name,
@@ -280,11 +276,9 @@ const addConsumer = async (req, res) => {
 
         const existingUser = await User.findOne({ _id: userId });
         if (!existingUser) {
-            return res
-                .status(400)
-                .json({
-                    message: "User with the provided userId does not exist",
-                });
+            return res.status(400).json({
+                message: "User with the provided userId does not exist",
+            });
         }
 
         const newConsumer = await Consumer.create({ user: userId });
