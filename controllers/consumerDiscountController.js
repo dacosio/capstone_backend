@@ -1,7 +1,7 @@
 const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
 
 const ConsumerDiscount = require("../models/ConsumerDiscount");
-// const Discount = require("../models/Discount");
+const Discount = require("../models/Discount");
 
 const getAllConsumerDiscounts = async (req, res) => {
     try {
@@ -21,16 +21,16 @@ const getAllConsumerDiscounts = async (req, res) => {
                 path: "consumer",
                 populate: { path: "user", select: "-password" },
             })
-            // .populate({
-            //   path: "discount",
-            //   populate: {
-            //     path: "merchant",
-            //     populate: {
-            //       path: "user",
-            //       select: "-password",
-            //     },
-            //   },
-            // })
+            .populate({
+                path: "discount",
+                populate: {
+                    path: "merchant",
+                    populate: {
+                        path: "user",
+                        select: "-password",
+                    },
+                },
+            })
             .lean();
 
         if (!consumerDiscounts?.length) {
@@ -58,17 +58,17 @@ const addConsumerDiscount = async (req, res) => {
                 .json({ error: "Consumer not found. Please log in" });
         }
 
-        const { couponId: discountId } = req.body;
+        const { discountId } = req.body;
 
         if (!discountId) {
             return res.status(400).json({ message: "discountId is required" });
         }
 
-        // const discount = await Discount.findOne(discountId).exec();
+        const discount = await Discount.findOne({ _id: discountId }).exec();
 
-        // if (!discount) {
-        //   return res.status(404).json({ message: "Discount not found" });
-        // }
+        if (!discount) {
+            return res.status(404).json({ message: "Discount not found" });
+        }
 
         const qrCode = await generateBase64QRCode({
             consumer: consumerId,
@@ -131,11 +131,9 @@ const updateConsumerDiscount = async (req, res) => {
             !status ||
             !["active", "removed", "canceled", "expired"].includes(status)
         ) {
-            return res
-                .status(400)
-                .json({
-                    message: "consumerDiscountId and status are required",
-                });
+            return res.status(400).json({
+                message: "consumerDiscountId and status are required",
+            });
         }
 
         const updatedConsumerDiscount =

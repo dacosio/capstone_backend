@@ -22,9 +22,13 @@ const getAllTransactions = async (req, res) => {
             })
             .populate({
                 path: "consumerDiscount",
-                // populate: { path: "discount"},
+                populate: { path: "discount" },
             })
             .lean();
+
+        if (!transactions?.length) {
+            return res.status(400).json({ message: "No transactions found" });
+        }
 
         // Return the transactions
         res.status(200).json(transactions);
