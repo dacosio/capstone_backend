@@ -16,15 +16,26 @@ const MenuSchema = new mongoose.Schema(
         description: {
             type: String,
         },
-        merchantId: {
+        merchant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",
             required: true,
         },
-        cuisineTypeId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "CuisineType",
-            // required: true,
+        cuisineType: {
+            type: String,
+            required: true,
+            enum:
+                [
+                    "American",
+                    "Chinese",
+                    "Indian",
+                    "Italian",
+                    "Japanese",
+                    "Korean",
+                    "Mexican",
+                    "Thai",
+                    "Others"
+                ],
         },
         isFeatured: {
             type: Boolean,
