@@ -4,18 +4,23 @@ const Menu = require("./../models/Menu");
 
 const getAllMenu = async (req, res) => {
     try {
-        const merchantId = req.merchantId;
+        const merchant = req.merchantId;
 
-        const allMenuItems = await Menu.find({ merchantId });
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" })
+        }
+
+        const allMenuItems = await Menu.find({ merchant });
 
         if (!allMenuItems?.length) {
             return res.status(400).json({ message: "No menu available" });
         }
-        res.status(200).json({ success: true, data: allMenuItems });
+
+        res.status(200).json({ data: allMenuItems });
+
     } catch (error) {
         console.error("Error getting all menu items:", error);
         res.status(500).json({
-            success: false,
             error: "Internal server error",
         });
     }
@@ -30,62 +35,67 @@ const addMenuItem = async (req, res) => {
             name,
             originalPrice,
             description,
-            cuisineTypeId,
+            cuisineType,
             isFeatured,
         } = req.body;
 
-        const merchantId = req.merchantId;
+        const merchant = req.merchantId;
 
-        const newMenuItem = new Menu({
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" })
+        }
+
+        const savedMenuItem = await Menu.create({
             imageUrl,
             name,
             originalPrice,
             description,
-            merchantId,
-            cuisineTypeId,
+            merchant,
+            cuisineType,
             isFeatured,
         });
 
-        const savedMenuItem = await newMenuItem.save();
+        res.status(201).json({ data: savedMenuItem });
 
-        res.status(201).json({ success: true, data: savedMenuItem });
     } catch (error) {
         console.error("Error adding menu item:", error);
         res.status(500).json({
-            success: false,
             error: "Internal server error",
         });
     }
 };
 
+
 // delete menu item
 
 const deleteMenuItem = async (req, res) => {
     try {
-        console.log(req);
+
         const { id } = req.params;
 
-        const merchantId = req.merchantId;
+        const merchant = req.merchantId;
 
         const deletedMenuItem = await Menu.findOneAndDelete({
             _id: id,
-            merchantId,
+            merchant,
         });
+
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" })
+        }
 
         if (!deletedMenuItem) {
             return res
                 .status(404)
-                .json({ success: false, error: "Menu item not found" });
+                .json({ error: "Menu item not found" });
         }
 
         res.status(200).json({
-            success: true,
             message: "Menu item deleted successfully",
         });
     } catch (error) {
         console.error("Error deleting menu item:", error);
         res.status(500).json({
-            success: false,
             error: "Internal server error",
         });
     }
