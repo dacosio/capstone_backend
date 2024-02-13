@@ -2,6 +2,18 @@ const mongoose = require("mongoose");
 
 const AdSchema = new mongoose.Schema(
     {
+        image: {
+            type: String,
+            required: true,
+        },
+        template: {
+            type: String,
+            required: true,
+        },
+        label: {
+            type: String,
+            required: true,
+        },
         startDate: {
             type: Date,
             required: true,
