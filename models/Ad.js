@@ -22,11 +22,11 @@ const AdSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        payment: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Payment",
-            required: true,
-        },
+        // payment: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: "Payment",
+        //     required: true,
+        // },
         merchantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",
