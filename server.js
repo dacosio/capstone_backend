@@ -41,6 +41,7 @@ app.use("/api", require("./routes/menuDiscountRoutes"));
 app.use("/api", require("./routes/consumerDiscountRoutes"));
 app.use("/api", require("./routes/transactionRoutes"));
 app.use("/api", require("./routes/menuRoutes"));
+app.use("/api", require("./routes/adRoutes"));
 
 app.use((error, req, res, next) => {
     if (error instanceof multer.MulterError) {
