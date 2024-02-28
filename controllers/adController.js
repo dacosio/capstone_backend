@@ -105,7 +105,7 @@ const generateAdText = async (req, res) => {
                 role: "system",
                 content: `Your response should give always give a headline and a tagline for a promo in my restaurant where the
                         headline has a maximum of 20 characters and the tagline has
-                        a maximum of 50 characters, both considers white spaces. Return the response in the following parsable JSON format:
+                        a maximum of 40 characters, both considers white spaces. Return the response in the following parsable JSON format:
                     {
                         "h": "headline",
                         "t" "tagline" 
