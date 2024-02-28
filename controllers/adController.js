@@ -109,11 +109,17 @@ const generateAdText = async (req, res) => {
                     {
                         "h": "headline",
                         "t" "tagline" 
-                    }`,
+                    }
+                    If you cannot provide the expected answer with the conditions above. Return the response:
+                    {
+                        "h": "Invalid Prompt",
+                        "t": "Please, keep the description within the promo ad."
+                    }
+                    `,
             },
             {
                 role: "user",
-                content: description,
+                content: `${description}`,
             },
         ];
 
@@ -131,7 +137,9 @@ const generateAdText = async (req, res) => {
                 max_tokens: 100,
                 temperature: 1,
             });
-            content = JSON.parse(completion.choices[0].message.content);
+
+            const messageObject = completion.choices[0].message.content;
+            content = JSON.parse(messageObject);
         }
 
         return res.status(200).json(content);
