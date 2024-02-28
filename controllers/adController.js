@@ -1,3 +1,4 @@
+const { openai } = require("../config/openAi");
 const Ad = require("../models/Ad");
 const StripeCustomer = require("../models/StripeCustomer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
@@ -91,7 +92,56 @@ const createAds = async (req, res) => {
     }
 };
 
+const generateAdText = async (req, res) => {
+    const { description } = req.body;
+    try {
+        if (!description) {
+            return res
+                .status(400)
+                .json({ error: "Description cannot be empty" });
+        }
+        const messages = [
+            {
+                role: "system",
+                content: `Your response should give always give a headline and a tagline for a promo in my restaurant where the
+                        headline has a maximum of 20 characters and the tagline has
+                        a maximum of 50 characters, both considers white spaces. Return the response in the following parsable JSON format:
+                    {
+                        "h": "headline",
+                        "t" "tagline" 
+                    }`,
+            },
+            {
+                role: "user",
+                content: description,
+            },
+        ];
+
+        let content = null;
+        while (
+            !content ||
+            !content.h ||
+            !content.t ||
+            content.h.length > 20 ||
+            content.t.length > 50
+        ) {
+            const completion = await openai.chat.completions.create({
+                model: "gpt-3.5-turbo",
+                messages,
+                max_tokens: 100,
+                temperature: 1,
+            });
+            content = JSON.parse(completion.choices[0].message.content);
+        }
+
+        return res.status(200).json(content);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllAds,
     createAds,
+    generateAdText,
 };
