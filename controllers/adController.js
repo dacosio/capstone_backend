@@ -151,7 +151,7 @@ const generateAdText = async (req, res) => {
 
 const getAdPrices = async (req, res) => {
     try {
-        const adPrices = await AdPrice.find().lean();
+        const adPrices = await AdPrice.find().select("label price").lean();
         return res.status(200).json(adPrices);
     } catch (error) {
         res.status(500).json({ message: error.message });
