@@ -1,5 +1,6 @@
 const { openai } = require("../config/openAi");
 const Ad = require("../models/Ad");
+const AdPrice = require("../models/AdPrice");
 const StripeCustomer = require("../models/StripeCustomer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
@@ -148,8 +149,33 @@ const generateAdText = async (req, res) => {
     }
 };
 
+const getAdPrices = async (req, res) => {
+    try {
+        const adPrices = await AdPrice.find().lean();
+        return res.status(200).json(adPrices);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const createAdPrices = async (req, res) => {
+    try {
+        const { price, label } = req.body;
+
+        const adPrices = await AdPrice.create({
+            price,
+            label,
+        });
+        return res.status(200).json(adPrices);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getAllAds,
     createAds,
     generateAdText,
+    getAdPrices,
+    createAdPrices,
 };
