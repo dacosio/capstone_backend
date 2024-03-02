@@ -10,8 +10,9 @@ const MenuSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        orginalPrice: {
+        originalPrice: {
             type: String,
+            required: true,
         },
         description: {
             type: String,
@@ -23,19 +24,17 @@ const MenuSchema = new mongoose.Schema(
         },
         cuisineType: {
             type: String,
-            required: true,
-            enum:
-                [
-                    "American",
-                    "Chinese",
-                    "Indian",
-                    "Italian",
-                    "Japanese",
-                    "Korean",
-                    "Mexican",
-                    "Thai",
-                    "Others"
-                ],
+            enum: [
+                "American",
+                "Chinese",
+                "Indian",
+                "Italian",
+                "Japanese",
+                "Korean",
+                "Mexican",
+                "Thai",
+                "Others",
+            ],
         },
         isFeatured: {
             type: Boolean,
