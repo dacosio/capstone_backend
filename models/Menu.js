@@ -4,7 +4,6 @@ const MenuSchema = new mongoose.Schema(
     {
         imageUrl: {
             type: String,
-            required: true,
         },
         name: {
             type: String,
