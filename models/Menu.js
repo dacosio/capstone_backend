@@ -21,6 +21,10 @@ const MenuSchema = new mongoose.Schema(
             ref: "Merchant",
             required: true,
         },
+        discountId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Discount",
+        },
         cuisineType: {
             type: String,
             enum: [
