@@ -21,7 +21,7 @@ const MenuSchema = new mongoose.Schema(
             ref: "Merchant",
             required: true,
         },
-        discountId: {
+        discount: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Discount",
         },
