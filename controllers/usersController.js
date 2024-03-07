@@ -12,7 +12,7 @@ const getAllConsumers = async (req, res) => {
             .lean();
 
         if (!consumers?.length) {
-            return res.status(200).json({ message: "No consumers found" });
+            return res.status(400).json({ message: "No consumers found" });
         }
 
         res.status(200).json(consumers);
@@ -31,10 +31,31 @@ const getAllMerchants = async (req, res) => {
             .lean();
 
         if (!merchants?.length) {
-            return res.status(200).json({ message: "No merchants found" });
+            return res.status(400).json({ message: "No merchants found" });
         }
 
         res.status(200).json(merchants);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getMerchant = async (req, res) => {
+    try {
+        const { merchantId } = req.body;
+
+        const merchant = await Merchant.findOne({ _id: merchantId })
+            .populate({
+                path: "user",
+                select: "-password",
+            })
+            .lean();
+
+        if (!merchant) {
+            return res.status(400).json({ message: "No merchant found" });
+        }
+
+        res.status(200).json(merchant);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -53,5 +74,6 @@ const uploadFile = async (req, res) => {
 module.exports = {
     getAllConsumers,
     getAllMerchants,
+    getMerchant,
     uploadFile,
 };

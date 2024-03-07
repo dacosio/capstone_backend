@@ -221,17 +221,41 @@ const addMerchant = async (req, res) => {
             name,
             description,
             address,
-            opening,
-            closing,
+            cuisineType,
+            cost,
+            openings,
+            closings,
             isVerified,
             userId,
         } = req.body;
 
+        const cuisineTypes = [
+            "American",
+            "Chinese",
+            "Indian",
+            "Italian",
+            "Japanese",
+            "Korean",
+            "Mexican",
+            "Thai",
+            "Others",
+        ];
+        const costs = ["1", "2", "3", "4"];
+        const pattern = /^1970-01-01T\d{2}:\d{2}:00\.000\+00:00$/;
+
         if (
             !name ||
             !address ||
-            !opening ||
-            !closing ||
+            !cuisineType ||
+            !cuisineTypes.includes(cuisineType) ||
+            !cost ||
+            !costs.includes(cost) ||
+            !openings ||
+            openings.length !== 7 ||
+            !openings.every((opening) => pattern.test(opening)) ||
+            !closings ||
+            !closings.every((closing) => pattern.test(closing)) ||
+            closings.length !== 7 ||
             typeof isVerified !== "boolean" ||
             !userId
         ) {
@@ -250,8 +274,10 @@ const addMerchant = async (req, res) => {
             name,
             description,
             address,
-            opening,
-            closing,
+            cuisineType,
+            cost,
+            openings,
+            closings,
             isVerified,
             user: userId,
         });
