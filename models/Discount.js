@@ -4,9 +4,11 @@ const DiscountSchema = new mongoose.Schema(
     {
         label: {
             type: String,
+            required: true,
         },
         description: {
             type: String,
+            required: true,
         },
         percentDiscount: {
             type: mongoose.Schema.Types.Decimal128,
@@ -16,23 +18,15 @@ const DiscountSchema = new mongoose.Schema(
             type: String,
             // required: true,
         },
-        validFromTime: {
+        validFrom: {
             type: Date,
             required: true,
         },
-        validToTime: {
+        validTo: {
             type: Date,
             required: true,
         },
-        validFromDate: {
-            type: Date,
-            required: true,
-        },
-        validToDate: {
-            type: Date,
-            required: true,
-        },
-        merchant: {
+        merchantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",
             required: true,
@@ -41,6 +35,6 @@ const DiscountSchema = new mongoose.Schema(
     {
         timestamps: true,
     }
-);
+)
 
-module.exports = mongoose.model("Discount", DiscountSchema);
+module.exports = mongoose.model("Discount", DiscountSchema)
