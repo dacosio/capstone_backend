@@ -10,7 +10,7 @@ router
     .post(discountController.addDiscount)
     .get(discountController.getAllDiscount);
 
-router.route("/activeDiscount").get(discountController.getAllActiveDiscount);
+router.route("/active-discount").get(discountController.getAllActiveDiscount);
 
 router.route("/discount/:id").get(discountController.getDiscount);
 
