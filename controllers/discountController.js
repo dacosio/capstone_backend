@@ -88,7 +88,7 @@ const getAllActiveDiscount = async (req, res) => {
         });
 
         if (!allDiscount?.length) {
-            return res.status(400).json({ error: "No " });
+            return res.status(400).json({ error: "No active coupon" });
         }
 
         res.status(200).json({ data: allDiscount });
@@ -113,13 +113,13 @@ const getDiscount = async (req, res) => {
         }
 
         if (!discount) {
-            return res.status(404).json({ error: "Discount not found" });
+            return res.status(404).json({ error: "Coupon not found" });
         }
 
         res.status(200).json({ data: discount });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Discount is not available" });
+        res.status(500).json({ error: "Coupon is not available" });
     }
 };
 
