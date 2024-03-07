@@ -20,7 +20,8 @@ const createAds = async (req, res) => {
         // TODO, image has to come from aws different route
         const {
             template,
-            label,
+            headline,
+            tagline,
             startDate,
             endDate,
             amount,
@@ -38,7 +39,14 @@ const createAds = async (req, res) => {
                 message: "Bad Request: Amount must be greater than zero.",
             });
         }
-        if (!template || !label || !startDate || !endDate || !amount) {
+        if (
+            !template ||
+            !headline ||
+            !startDate ||
+            !endDate ||
+            !tagline ||
+            !amount
+        ) {
             return res
                 .status(400)
                 .json({ message: "Bad Request: Missing required fields." });
@@ -79,7 +87,8 @@ const createAds = async (req, res) => {
             await Ad.create({
                 image,
                 template,
-                label,
+                headline,
+                tagline,
                 startDate,
                 endDate,
                 merchantId,
