@@ -1,36 +1,131 @@
 const Discount = require("../models/Discount");
 
-const addDiscount = async(req, res) => {
+const addDiscount = async (req, res) => {
     try {
-        const merchantId = req.merchantId;
-        const { label, description, percentDiscount, validFrom, validTo } = req.body;
+        const {
+            label,
+            description,
+            percentDiscount,
+            validFromTime,
+            validToTime,
+            validFromDate,
+            validToDate,
+        } = req.body;
+        const merchant = req.merchantId;
+        console.log(merchant);
 
-        if(!merchantId) {
-            return res.status(400).json({ error: "Merchant not found" })
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" });
         }
 
-        if(!label || !description || !percentDiscount || !validFrom || !validTo) {
+        if (
+            !percentDiscount ||
+            !validFromTime ||
+            !validToTime ||
+            !validFromDate ||
+            !validToDate
+        ) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
         const newDiscount = await Discount.create({
-            label, 
-            description, 
-            percentDiscount, 
-            //imageUrl,
-            validFrom, 
-            validTo,
-            merchantId: merchantId,
+            label,
+            description,
+            percentDiscount,
+            // imageUrl,
+            validFromTime,
+            validToTime,
+            validFromDate,
+            validToDate,
+            merchant,
         });
 
-        res.status(200).json({ message: "Discount created successfullly.", discountId: newDiscount._id });
-
-    } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Discount not created."})
+        res.status(200).json({
+            message: "Coupon created successfullly.",
+            discountId: newDiscount._id,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Coupon not created." });
     }
-}
+};
+
+const getAllDiscount = async (req, res) => {
+    try {
+        const merchant = req.merchantId;
+
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" });
+        }
+
+        const allDiscount = await Discount.find({ merchant });
+        console.log("Number of Discounts:", allDiscount.length);
+
+        if (!allDiscount?.length) {
+            return res.status(400).json({ error: "No " });
+        }
+
+        res.status(200).json({ data: allDiscount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "No coupon available" });
+    }
+};
+
+const getAllActiveDiscount = async (req, res) => {
+    try {
+        const merchant = req.merchantId;
+
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" });
+        }
+
+        const currentDate = new Date();
+
+        const allDiscount = await Discount.find({
+            merchant,
+            validToDate: { $gte: currentDate },
+        });
+
+        if (!allDiscount?.length) {
+            return res.status(400).json({ error: "No " });
+        }
+
+        res.status(200).json({ data: allDiscount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "No coupon available" });
+    }
+};
+
+const getDiscount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const merchant = req.merchantId;
+
+        const discount = await Discount.findOne({
+            _id: id,
+            merchant,
+        });
+
+        if (!merchant) {
+            return res.status(400).json({ error: "Merchant not found" });
+        }
+
+        if (!discount) {
+            return res.status(404).json({ error: "Discount not found" });
+        }
+
+        res.status(200).json({ data: discount });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Discount is not available" });
+    }
+};
 
 module.exports = {
     addDiscount,
-}
+    getAllDiscount,
+    getAllActiveDiscount,
+    getDiscount,
+};
