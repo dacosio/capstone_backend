@@ -10,7 +10,11 @@ const AdSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        label: {
+        headline: {
+            type: String,
+            required: true,
+        },
+        tagline: {
             type: String,
             required: true,
         },
