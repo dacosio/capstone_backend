@@ -98,6 +98,32 @@ const getAllActiveDiscount = async (req, res) => {
     }
 };
 
+const getActiveDiscounts = async (req, res) => {
+    try {
+        const { merchantId } = req.query;
+
+        if (!merchantId) {
+            return res.status(400).json({ error: "Merchant not found" });
+        }
+
+        const currentDate = new Date();
+
+        const activeDiscounts = await Discount.find({
+            merchant: merchantId,
+            validToDate: { $gte: currentDate },
+        });
+
+        if (!activeDiscounts?.length) {
+            return res.status(400).json({ error: "No active coupon" });
+        }
+
+        res.status(200).json(activeDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "No coupon available" });
+    }
+};
+
 const getDiscount = async (req, res) => {
     try {
         const { id } = req.params;
@@ -127,5 +153,6 @@ module.exports = {
     addDiscount,
     getAllDiscount,
     getAllActiveDiscount,
+    getActiveDiscounts,
     getDiscount,
 };
