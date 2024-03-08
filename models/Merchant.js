@@ -6,8 +6,13 @@ const MerchantSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        imageUrls: {
+            type: [String],
+            required: true,
+        },
         description: {
             type: String,
+            required: true,
         },
         address: {
             type: String,
