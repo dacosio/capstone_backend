@@ -33,12 +33,12 @@ const MerchantSchema = new mongoose.Schema(
             enum: ["1", "2", "3", "4"],
             required: true,
         },
-        // 7 items ["1970-01-01THH:mm:SSZ"]
+        // 7 items ["1970-01-01THH:mm:00.000+00:00"]
         openings: {
             type: [Date],
             required: true,
         },
-        // 7 items ["1970-01-01THH:mm:SSZ"]
+        // 7 items ["1970-01-01THH:mm:00.000+00:00"]
         closings: {
             type: [Date],
             required: true,
