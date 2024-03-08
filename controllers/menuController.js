@@ -12,12 +12,6 @@ const getAllMenu = async (req, res) => {
 
         const allMenuItems = await Menu.find({ merchant });
 
-        if (!allMenuItems?.length) {
-            return res
-                .status(400)
-                .json({ message: "No menu available", data: [] });
-        }
-
         res.status(200).json({ data: allMenuItems });
     } catch (error) {
         console.error("Error getting all menu items:", error);
