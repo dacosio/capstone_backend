@@ -7,17 +7,12 @@ const getAllMenu = async (req, res) => {
         const merchant = req.merchantId;
 
         if (!merchant) {
-            return res.status(400).json({ error: "Merchant not found" })
+            return res.status(400).json({ error: "Merchant not found" });
         }
 
         const allMenuItems = await Menu.find({ merchant });
 
-        if (!allMenuItems?.length) {
-            return res.status(400).json({ message: "No menu available" });
-        }
-
         res.status(200).json({ data: allMenuItems });
-
     } catch (error) {
         console.error("Error getting all menu items:", error);
         res.status(500).json({
@@ -42,7 +37,7 @@ const addMenuItem = async (req, res) => {
         const merchant = req.merchantId;
 
         if (!merchant) {
-            return res.status(400).json({ error: "Merchant not found" })
+            return res.status(400).json({ error: "Merchant not found" });
         }
 
         const savedMenuItem = await Menu.create({
@@ -56,7 +51,6 @@ const addMenuItem = async (req, res) => {
         });
 
         res.status(201).json({ data: savedMenuItem });
-
     } catch (error) {
         console.error("Error adding menu item:", error);
         res.status(500).json({
@@ -65,12 +59,10 @@ const addMenuItem = async (req, res) => {
     }
 };
 
-
 // delete menu item
 
 const deleteMenuItem = async (req, res) => {
     try {
-
         const { id } = req.params;
 
         const merchant = req.merchantId;
@@ -81,13 +73,11 @@ const deleteMenuItem = async (req, res) => {
         });
 
         if (!merchant) {
-            return res.status(400).json({ error: "Merchant not found" })
+            return res.status(400).json({ error: "Merchant not found" });
         }
 
         if (!deletedMenuItem) {
-            return res
-                .status(404)
-                .json({ error: "Menu item not found" });
+            return res.status(404).json({ error: "Menu item not found" });
         }
 
         res.status(200).json({
