@@ -219,6 +219,7 @@ const addMerchant = async (req, res) => {
     try {
         const {
             name,
+            imageUrls,
             description,
             address,
             cuisineType,
@@ -245,6 +246,9 @@ const addMerchant = async (req, res) => {
 
         if (
             !name ||
+            !imageUrls ||
+            imageUrls.length === 0 ||
+            !description ||
             !address ||
             !cuisineType ||
             !cuisineTypes.includes(cuisineType) ||
@@ -272,6 +276,7 @@ const addMerchant = async (req, res) => {
         }
         const newMerchant = await Merchant.create({
             name,
+            imageUrls,
             description,
             address,
             cuisineType,
