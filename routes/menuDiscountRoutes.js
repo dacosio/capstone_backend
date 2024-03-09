@@ -7,5 +7,9 @@ router
     .route("/menuDiscount")
     .post(menuDiscountController.addMenuDiscount)
     .get(menuDiscountController.getAllMenuDiscount);
-    
+
+router
+    .route("/menu-discounts/merchant")
+    .get(menuDiscountController.getMenuDiscountsByMerchant);
+
 module.exports = router;

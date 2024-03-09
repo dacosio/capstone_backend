@@ -1,21 +1,26 @@
 const mongoose = require("mongoose");
 
-const MenuDiscountSchema = new mongoose.Schema (
+const MenuDiscountSchema = new mongoose.Schema(
     {
-        menuId: {
+        menu: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Menu",
-            required: true
+            required: true,
         },
-        discountId: {
+        discount: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Discount",
-            required: true
-        }
+            required: true,
+        },
+        merchant: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Merchant",
+            required: true,
+        },
     },
     {
-        timestamps: true
+        timestamps: true,
     }
-)
+);
 
-module.exports = mongoose.model("MenuDiscount", MenuDiscountSchema)
+module.exports = mongoose.model("MenuDiscount", MenuDiscountSchema);
