@@ -9,7 +9,7 @@ const DiscountSchema = new mongoose.Schema(
             type: String,
         },
         percentDiscount: {
-            type: mongoose.Schema.Types.Decimal128,
+            type: Number,
             required: true,
         },
         imageUrl: {
