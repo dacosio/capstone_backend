@@ -23,7 +23,15 @@ const getAllConsumers = async (req, res) => {
 
 const getAllMerchants = async (req, res) => {
     try {
-        const merchants = await Merchant.find()
+        const { keyword } = req.query;
+
+        console.log(keyword);
+
+        const merchants = await Merchant.find(
+            keyword && {
+                name: { $regex: keyword, $options: "i" },
+            }
+        )
             .populate({
                 path: "user",
                 select: "-password",
