@@ -48,11 +48,7 @@ const getAllMenuDiscount = async (req, res) => {
             })
             .lean();
 
-        if (!menuDiscounts?.length) {
-            return res.status(200).json(menuDiscounts);
-        }
-
-        res.status(200).json({ menuDiscounts });
+        res.status(200).json(menuDiscounts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Something went wrong" });
