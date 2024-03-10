@@ -25,8 +25,6 @@ const getAllMerchants = async (req, res) => {
     try {
         const { keyword } = req.query;
 
-        console.log(keyword);
-
         const merchants = await Merchant.find(
             keyword && {
                 name: { $regex: keyword, $options: "i" },
@@ -39,10 +37,12 @@ const getAllMerchants = async (req, res) => {
             .lean();
 
         if (!merchants?.length) {
-            return res.status(400).json({ message: "No merchants found" });
+            return res
+                .status(200)
+                .json({ data: [], message: "No merchants found" });
         }
 
-        res.status(200).json(merchants);
+        res.status(200).json({ data: merchants });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

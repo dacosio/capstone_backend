@@ -115,14 +115,14 @@ const getActiveDiscountsByMerchant = async (req, res) => {
 
         if (!activeDiscounts?.length) {
             return res
-                .status(400)
-                .json({ error: "Active discounts not found" });
+                .status(200)
+                .json({ data: [], message: "Active discounts not found" });
         }
 
-        res.status(200).json(activeDiscounts);
+        res.status(200).json({ data: activeDiscounts });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
