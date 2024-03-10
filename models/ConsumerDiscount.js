@@ -23,7 +23,7 @@ const ConsumerDiscountSchema = new mongoose.Schema(
         status: {
             type: String,
             required: true,
-            enum: ["active", "removed", "canceled", "expired"],
+            enum: ["upcoming", "redeemed", "cancelled"],
         },
     },
     {
