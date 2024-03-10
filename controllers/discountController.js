@@ -113,13 +113,7 @@ const getActiveDiscountsByMerchant = async (req, res) => {
             validToDate: { $gte: currentDate },
         });
 
-        if (!activeDiscounts?.length) {
-            return res
-                .status(200)
-                .json({ data: [], message: "Active discounts not found" });
-        }
-
-        res.status(200).json({ data: activeDiscounts });
+        res.status(200).json(activeDiscounts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

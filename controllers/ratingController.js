@@ -22,13 +22,7 @@ const getRatingsByMerchant = async (req, res) => {
             })
             .lean();
 
-        if (!ratings?.length) {
-            return res
-                .status(200)
-                .json({ data: [], message: "Ratings not found" });
-        }
-
-        res.status(200).json({ data: ratings });
+        res.status(200).json(ratings);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });

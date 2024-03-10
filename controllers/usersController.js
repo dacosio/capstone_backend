@@ -36,13 +36,7 @@ const getAllMerchants = async (req, res) => {
             })
             .lean();
 
-        if (!merchants?.length) {
-            return res
-                .status(200)
-                .json({ data: [], message: "No merchants found" });
-        }
-
-        res.status(200).json({ data: merchants });
+        res.status(200).json(merchants);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

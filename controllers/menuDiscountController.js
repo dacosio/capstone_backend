@@ -79,13 +79,7 @@ const getMenuDiscountsByMerchant = async (req, res) => {
             })
             .lean();
 
-        if (!menuDiscounts?.length) {
-            return res
-                .status(200)
-                .json({ data: [], message: "Menu discounts not found" });
-        }
-
-        res.status(200).json({ data: menuDiscounts });
+        res.status(200).json(menuDiscounts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
