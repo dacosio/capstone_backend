@@ -4,7 +4,7 @@ const router = express.Router();
 const menuDiscountController = require("../controllers/menuDiscountController");
 
 router
-    .route("/menuDiscount")
+    .route("/menu-discount")
     .post(menuDiscountController.addMenuDiscount)
     .get(menuDiscountController.getAllMenuDiscount);
 
