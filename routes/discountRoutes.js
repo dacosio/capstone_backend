@@ -12,6 +12,8 @@ router
 
 router.route("/active-discount").get(discountController.getAllActiveDiscount);
 
+router.route("/active-discounts").get(discountController.getActiveDiscounts);
+
 router.route("/discount/:id").get(discountController.getDiscount);
 
 module.exports = router;
