@@ -49,7 +49,7 @@ const getAllMenuDiscount = async (req, res) => {
             .lean();
 
         if (!menuDiscounts?.length) {
-            return res.status(400).json({ message: "No menu discounts found" });
+            return res.status(200).json(menuDiscounts);
         }
 
         res.status(200).json({ menuDiscounts });
