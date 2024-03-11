@@ -3,32 +3,37 @@ const MenuDiscount = require("../models/MenuDiscount");
 // after submitting the coupon created by merchant the discount id will be passed here including the menus selected where coupon was linked
 const addMenuDiscount = async (req, res) => {
     try {
-        const { discountId, menuIds } = req.body
-        
-        if(!discountId || !menuIds || !Array.isArray(menuIds)) {
-            return res.status(400).json({ error: "Discoint id and menu id required"});
+        const { discountId, menuIds } = req.body;
+
+        if (!discountId || !menuIds || !Array.isArray(menuIds)) {
+            return res
+                .status(400)
+                .json({ error: "Discoint id and menu id required" });
         }
 
         const menuDiscounts = menuIds.map((menuId) => ({
-            discountId: discountId,
-            menuId: menuId
-        }))
+            discountId,
+            menuId,
+        }));
 
-        const newMenuDiscount = await MenuDiscount.create(menuDiscounts)
+        const newMenuDiscount = await MenuDiscount.create(menuDiscounts);
 
-        res.status(200).json({ message: "Menu discount successfully created.", newMenuDiscount })
-    } catch(error){
+        res.status(200).json({
+            message: "Menu discount successfully created.",
+            newMenuDiscount,
+        });
+    } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Something went wrong" });
     }
-} 
+};
 
 const getAllMenuDiscount = async (req, res) => {
     try {
         const merchantId = req.merchantId;
 
-        if(!merchantId) {
-            return res.status(400).json({ error: "Merchant not found" })
+        if (!merchantId) {
+            return res.status(400).json({ error: "Merchant not found" });
         }
 
         const menuDiscounts = await MenuDiscount.find()
@@ -39,23 +44,46 @@ const getAllMenuDiscount = async (req, res) => {
             // })
             .populate({
                 path: "discountId",
-                select: "label percentDiscount"
+                select: "label percentDiscount",
             })
             .lean();
 
-        if (!menuDiscounts?.length) {
-            return res.status(400).json({ message: "No menu discounts found" });
+        res.status(200).json(menuDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Something went wrong" });
+    }
+};
+
+const getMenuDiscountsByMerchant = async (req, res) => {
+    try {
+        const { merchantId } = req.query;
+
+        if (!merchantId) {
+            return res.status(404).json({ error: "Merchant not found" });
         }
 
-        res.status(200).json({menuDiscounts});
+        const menuDiscounts = await MenuDiscount.find({ merchant: merchantId })
+            .populate({
+                path: "menu",
+            })
+            .populate({
+                path: "discount",
+            })
+            .populate({
+                path: "merchant",
+            })
+            .lean();
 
-    } catch(error) {
-        console.error(error)
-        res.status(500).json({ error: "Something went wrong" })
+        res.status(200).json(menuDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 module.exports = {
     addMenuDiscount,
     getAllMenuDiscount,
-}
+    getMenuDiscountsByMerchant,
+};

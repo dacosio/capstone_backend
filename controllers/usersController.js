@@ -23,16 +23,18 @@ const getAllConsumers = async (req, res) => {
 
 const getAllMerchants = async (req, res) => {
     try {
-        const merchants = await Merchant.find()
+        const { keyword } = req.query;
+
+        const merchants = await Merchant.find(
+            keyword && {
+                name: { $regex: keyword, $options: "i" },
+            }
+        )
             .populate({
                 path: "user",
                 select: "-password",
             })
             .lean();
-
-        if (!merchants?.length) {
-            return res.status(400).json({ message: "No merchants found" });
-        }
 
         res.status(200).json(merchants);
     } catch (error) {

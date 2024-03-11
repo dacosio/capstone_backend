@@ -1,6 +1,6 @@
 const Rating = require("../models/Rating");
 
-const getAllMerchantRatings = async (req, res) => {
+const getRatingsByMerchant = async (req, res) => {
     try {
         const { merchantId } = req.query;
 
@@ -8,7 +8,6 @@ const getAllMerchantRatings = async (req, res) => {
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        // Find all ratings for the merchant and populate merchant and consumer fields
         const ratings = await Rating.find({ merchant: merchantId })
             .populate({
                 path: "merchant",
@@ -23,16 +22,10 @@ const getAllMerchantRatings = async (req, res) => {
             })
             .lean();
 
-        if (!ratings?.length) {
-            return res.status(400).json({ error: "No rating" });
-        }
-
-        // Return the ratings
         res.status(200).json(ratings);
     } catch (error) {
-        // Handle errors
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -63,6 +56,6 @@ const addRating = async (req, res) => {
 };
 
 module.exports = {
-    getAllMerchantRatings,
+    getRatingsByMerchant,
     addRating,
 };
