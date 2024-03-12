@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const AdSchema = new mongoose.Schema(
     {
-        image: {
+        imageUrl: {
             type: String,
             required: true,
         },
@@ -26,11 +26,10 @@ const AdSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        // payment: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     ref: "Payment",
-        //     required: true,
-        // },
+        amount: {
+            type: Number,
+            required: true,
+        },
         merchantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",
