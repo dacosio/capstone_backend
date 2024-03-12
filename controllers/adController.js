@@ -1,4 +1,5 @@
 const { openai } = require("../config/openAi");
+const { stringToDate } = require("../helpers/date");
 const Ad = require("../models/Ad");
 const AdPrice = require("../models/AdPrice");
 const StripeCustomer = require("../models/StripeCustomer");
@@ -18,19 +19,19 @@ const getAllAds = async (req, res) => {
 const createAds = async (req, res) => {
     try {
         // TODO, image has to come from aws different route
-        const {
+        let {
             template,
             headline,
             tagline,
             startDate,
             endDate,
             amount,
-            image,
+            imageUrl,
             paymentMethodId,
         } = req.body;
+        console.log("🚀 ~ createAds ~ imageUrl:", imageUrl);
 
         const merchantId = req.merchantId;
-        console.log(merchantId);
 
         if (!merchantId)
             return res.status(401).json({ message: "Please login." });
@@ -39,23 +40,24 @@ const createAds = async (req, res) => {
                 message: "Bad Request: Amount must be greater than zero.",
             });
         }
+
         if (
             !template ||
             !headline ||
+            !tagline ||
             !startDate ||
             !endDate ||
-            !tagline ||
-            !amount
+            !amount ||
+            !imageUrl ||
+            !paymentMethodId
         ) {
             return res
                 .status(400)
-                .json({ message: "Bad Request: Missing required fields." });
+                .json({ message: "Bad Request: All fields are required" });
         }
-        // if (!req.files) {
-        //     return res
-        //         .status(400)
-        //         .json({ message: "Bad Request: File is missing." });
-        // }
+
+        startDate = stringToDate(startDate);
+        endDate = stringToDate(endDate);
 
         const customer = await StripeCustomer.findOne({
             user: req.id,
@@ -64,8 +66,6 @@ const createAds = async (req, res) => {
         if (!customer) {
             res.status(404).json({ message: "Please setup a payment method." });
         }
-        // TODO
-        // const image = await s3UploadV3(req.files);
 
         const receipt = await stripe.customers.retrieve(customer.customerId);
 
@@ -85,18 +85,22 @@ const createAds = async (req, res) => {
 
         if (paymentIntent) {
             await Ad.create({
-                image,
+                imageUrl,
                 template,
                 headline,
                 tagline,
                 startDate,
                 endDate,
+                amount,
                 merchantId,
             });
             return res
                 .status(200)
                 .json({ message: "Ad has been successfully created" });
         }
+        return res
+            .status(200)
+            .json({ message: "Ad has been successfully created" });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
