@@ -105,7 +105,7 @@ const getActiveDiscountsByMerchant = async (req, res) => {
         const { merchantId } = req.query;
 
         if (!merchantId) {
-            return res.status(400).json({ message: "Merchant not found" });
+            return res.status(400).json({ message: "merchantId is required" });
         }
 
         const currentDate = new Date();
