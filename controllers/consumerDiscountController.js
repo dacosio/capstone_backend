@@ -154,7 +154,7 @@ const updateConsumerDiscount = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -162,6 +162,12 @@ const updateConsumerDiscount = async (req, res) => {
 const getConsumerDiscount = async (req, res) => {
     try {
         const { consumerDiscountId } = req.query;
+
+        if (!consumerDiscountId) {
+            return res.status(400).json({
+                message: "consumerDiscountId is required",
+            });
+        }
 
         const consumerDiscount = await ConsumerDiscount.findOne({
             _id: consumerDiscountId,
@@ -179,15 +185,9 @@ const getConsumerDiscount = async (req, res) => {
             })
             .lean();
 
-        if (!consumerDiscount) {
-            return res
-                .status(400)
-                .json({ message: "No consumer discount found" });
-        }
-
         res.status(200).json(consumerDiscount);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -197,7 +197,7 @@ const getConsumerDiscountsByMerchant = async (req, res) => {
         const { merchantId } = req.query;
 
         if (!merchantId) {
-            return res.status(404).json({ message: "Merchant not found" });
+            return res.status(400).json({ message: "merchantId is required" });
         }
 
         const consumerDiscounts = await ConsumerDiscount.find({

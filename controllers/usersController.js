@@ -53,10 +53,6 @@ const getMerchant = async (req, res) => {
             })
             .lean();
 
-        if (!merchant) {
-            return res.status(400).json({ message: "No merchant found" });
-        }
-
         res.status(200).json(merchant);
     } catch (error) {
         res.status(500).json({ message: error.message });
