@@ -7,6 +7,11 @@ const ConsumerDiscountSchema = new mongoose.Schema(
             ref: "Consumer",
             required: true,
         },
+        merchant: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Merchant",
+            required: true,
+        },
         discount: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Discount",
