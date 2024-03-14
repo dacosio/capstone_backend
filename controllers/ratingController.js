@@ -5,7 +5,7 @@ const getRatingsByMerchant = async (req, res) => {
         const { merchantId } = req.query;
 
         if (!merchantId) {
-            return res.status(404).json({ error: "Merchant not found" });
+            return res.status(404).json({ message: "Merchant not found" });
         }
 
         const ratings = await Rating.find({ merchant: merchantId })
@@ -15,10 +15,7 @@ const getRatingsByMerchant = async (req, res) => {
             })
             .populate({
                 path: "consumer",
-                populate: {
-                    path: "user",
-                    select: "-password",
-                },
+                populate: { path: "user", select: "-password" },
             })
             .lean();
 

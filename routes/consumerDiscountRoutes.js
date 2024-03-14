@@ -4,8 +4,16 @@ const consumerDiscountController = require("../controllers/consumerDiscountContr
 
 router
     .route("/consumer-discount")
-    .get(consumerDiscountController.getAllConsumerDiscounts)
+    .get(consumerDiscountController.getConsumerDiscount)
     .post(consumerDiscountController.addConsumerDiscount)
     .put(consumerDiscountController.updateConsumerDiscount);
+
+router
+    .route("/consumer-discounts")
+    .get(consumerDiscountController.getAllConsumerDiscounts);
+
+router
+    .route("/consumer-discounts/merchant")
+    .get(consumerDiscountController.getConsumerDiscountsByMerchant);
 
 module.exports = router;

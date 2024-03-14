@@ -2,6 +2,7 @@ const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
 
 const ConsumerDiscount = require("../models/ConsumerDiscount");
 const Discount = require("../models/Discount");
+const Merchant = require("../models/Merchant");
 
 const getAllConsumerDiscounts = async (req, res) => {
     try {
@@ -10,7 +11,7 @@ const getAllConsumerDiscounts = async (req, res) => {
         if (!consumerId) {
             return res
                 .status(404)
-                .json({ error: "Consumer not found. Please log in" });
+                .json({ message: "Consumer not found. Please log in" });
         }
 
         // Find all consumer discounts for the consumer and populate consumer and discount fields
@@ -25,10 +26,7 @@ const getAllConsumerDiscounts = async (req, res) => {
                 path: "discount",
                 populate: {
                     path: "merchant",
-                    populate: {
-                        path: "user",
-                        select: "-password",
-                    },
+                    populate: { path: "user", select: "-password" },
                 },
             })
             .lean();
@@ -44,7 +42,7 @@ const getAllConsumerDiscounts = async (req, res) => {
     } catch (error) {
         // Handle errors
         console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -55,13 +53,21 @@ const addConsumerDiscount = async (req, res) => {
         if (!consumerId) {
             return res
                 .status(404)
-                .json({ error: "Consumer not found. Please log in" });
+                .json({ message: "Consumer not found. Please log in" });
         }
 
-        const { discountId } = req.body;
+        const { merchantId, discountId } = req.body;
 
-        if (!discountId) {
-            return res.status(400).json({ message: "discountId is required" });
+        if (!merchantId || !discountId) {
+            return res
+                .status(400)
+                .json({ message: "merchantId and discountId are required" });
+        }
+
+        const merchant = await Merchant.findOne({ _id: merchantId }).exec();
+
+        if (!merchant) {
+            return res.status(404).json({ message: "Merchant not found" });
         }
 
         const discount = await Discount.findOne({ _id: discountId }).exec();
@@ -71,14 +77,12 @@ const addConsumerDiscount = async (req, res) => {
         }
 
         const qrCode = await generateBase64QRCode({
+            merchant: merchantId,
             consumer: consumerId,
             discount: discountId,
         });
 
-        const qrIdentifications = await ConsumerDiscount.find(
-            {},
-            { _id: 0, qrIdentification: 1 }
-        );
+        const qrIdentifications = await ConsumerDiscount.find().lean();
 
         let qrIdentification;
         while (true) {
@@ -105,17 +109,15 @@ const addConsumerDiscount = async (req, res) => {
         }
 
         const newConsumerDiscount = await ConsumerDiscount.create({
+            merchant: merchantId,
             consumer: consumerId,
             discount: discountId,
             qrCode,
             qrIdentification,
-            status: "active",
+            status: "upcoming",
         });
 
-        res.status(201).json({
-            message: "Consumer discount added successfully",
-            newConsumerDiscount,
-        });
+        res.status(201).json(newConsumerDiscount);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Internal server error" });
@@ -124,12 +126,13 @@ const addConsumerDiscount = async (req, res) => {
 
 const updateConsumerDiscount = async (req, res) => {
     try {
-        const { consumerDiscountId, status } = req.body;
+        const { consumerDiscount } = req.body;
 
         if (
-            !consumerDiscountId ||
-            !status ||
-            !["active", "removed", "canceled", "expired"].includes(status)
+            !consumerDiscount ||
+            !["upcoming", "redeemed", "cancelled"].includes(
+                consumerDiscount.status
+            )
         ) {
             return res.status(400).json({
                 message: "consumerDiscountId and status are required",
@@ -137,21 +140,86 @@ const updateConsumerDiscount = async (req, res) => {
         }
 
         const updatedConsumerDiscount =
-            await ConsumerDiscount.findByIdAndUpdate(consumerDiscountId, {
-                $set: { status },
+            await ConsumerDiscount.findByIdAndUpdate(consumerDiscount._id, {
+                $set: {
+                    ...consumerDiscount,
+                },
             }).exec();
 
         if (updatedConsumerDiscount) {
-            res.status(200).json({
-                message: `Status for the consumer discount has been updated to ${status}`,
-            });
+            res.status(200).json(updatedConsumerDiscount);
         } else {
             res.status(400).json({
-                message: `Status for the consumer discount has not been updated to ${status}`,
+                message: "Consumer discount has not been updated",
             });
         }
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: error.message });
+    }
+};
+
+const getConsumerDiscount = async (req, res) => {
+    try {
+        const { consumerDiscountId } = req.query;
+
+        const consumerDiscount = await ConsumerDiscount.findOne({
+            _id: consumerDiscountId,
+        })
+            .populate({
+                path: "merchant",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "consumer",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "discount",
+            })
+            .lean();
+
+        if (!consumerDiscount) {
+            return res
+                .status(400)
+                .json({ message: "No consumer discount found" });
+        }
+
+        res.status(200).json(consumerDiscount);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getConsumerDiscountsByMerchant = async (req, res) => {
+    try {
+        const { merchantId } = req.query;
+
+        if (!merchantId) {
+            return res.status(404).json({ message: "Merchant not found" });
+        }
+
+        const consumerDiscounts = await ConsumerDiscount.find({
+            merchant: merchantId,
+        })
+            .populate({
+                path: "merchant",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "consumer",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "discount",
+            })
+            .lean();
+
+        res.status(200).json(consumerDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -159,4 +227,6 @@ module.exports = {
     getAllConsumerDiscounts,
     addConsumerDiscount,
     updateConsumerDiscount,
+    getConsumerDiscount,
+    getConsumerDiscountsByMerchant,
 };
