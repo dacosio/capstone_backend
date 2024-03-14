@@ -32,6 +32,12 @@ const DiscountSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
+        menuIds: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Menu",
+            },
+        ],
         merchant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",

@@ -10,6 +10,7 @@ const addDiscount = async (req, res) => {
             validToTime,
             validFromDate,
             validToDate,
+            menuIds,
         } = req.body;
         const merchant = req.merchantId;
         console.log(merchant);
@@ -23,7 +24,8 @@ const addDiscount = async (req, res) => {
             !validFromTime ||
             !validToTime ||
             !validFromDate ||
-            !validToDate
+            !validToDate ||
+            !menuIds
         ) {
             return res.status(400).json({ error: "Missing required fields" });
         }
@@ -37,6 +39,7 @@ const addDiscount = async (req, res) => {
             validToTime,
             validFromDate,
             validToDate,
+            menuIds,
             merchant,
         });
 
@@ -85,6 +88,9 @@ const getAllActiveDiscount = async (req, res) => {
         const allDiscount = await Discount.find({
             merchant,
             validToDate: { $gte: currentDate },
+        }).populate({
+            path: "menuIds",
+            select: "name originalPrice imageUrl",
         });
 
         if (!allDiscount?.length) {
