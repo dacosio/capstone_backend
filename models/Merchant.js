@@ -35,17 +35,12 @@ const MerchantSchema = new mongoose.Schema(
         },
         cost: {
             type: String,
-            enum: ["1", "2", "3", "4"],
+            enum: [1, 2, 3, 4],
             required: true,
         },
-        // 7 items ["1970-01-01THH:mm:00.000+00:00"]
-        openings: {
-            type: [Date],
-            required: true,
-        },
-        // 7 items ["1970-01-01THH:mm:00.000+00:00"]
-        closings: {
-            type: [Date],
+        // 7 items [openingTime: {"1970-01-01THH:mm:00.000+00:00"}, closingTime: {"1970-01-01THH:mm:00.000+00:00"}]
+        operatingTimes: {
+            type: [{ openingTime: Date, closingTime: Date }],
             required: true,
         },
         isVerified: {

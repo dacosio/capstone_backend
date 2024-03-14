@@ -44,7 +44,7 @@ const getAllMerchants = async (req, res) => {
 
 const getMerchant = async (req, res) => {
     try {
-        const { merchantId } = req.body;
+        const { merchantId } = req.query;
 
         const merchant = await Merchant.findOne({ _id: merchantId })
             .populate({
