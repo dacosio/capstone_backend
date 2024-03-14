@@ -93,10 +93,6 @@ const getAllActiveDiscount = async (req, res) => {
             select: "name originalPrice imageUrl",
         });
 
-        if (!allDiscount?.length) {
-            return res.status(400).json({ error: "No active coupon" });
-        }
-
         res.status(200).json({ data: allDiscount });
     } catch (error) {
         console.error(error);
