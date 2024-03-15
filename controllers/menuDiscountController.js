@@ -86,6 +86,12 @@ const getMenuDiscountsByMerchantAndDiscount = async (req, res) => {
     try {
         const { merchantId, discountId } = req.params;
 
+        if (!merchantId && !discountId) {
+            return res
+                .status(400)
+                .json({ message: "merchantId & discountId is required" });
+        }
+
         const menuDiscounts = await MenuDiscount.find({
             merchant: merchantId,
             discount: discountId,
