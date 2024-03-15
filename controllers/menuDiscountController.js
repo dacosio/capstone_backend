@@ -8,7 +8,7 @@ const addMenuDiscount = async (req, res) => {
         if (!discountId || !menuIds || !Array.isArray(menuIds)) {
             return res
                 .status(400)
-                .json({ error: "Discount id and menu id required" });
+                .json({ error: "Discoint id and menu id required" });
         }
 
         const menuDiscounts = menuIds.map((menuId) => ({

@@ -4,9 +4,10 @@ const consumerDiscountController = require("../controllers/consumerDiscountContr
 
 router
     .route("/consumer-discounts")
+
     .post(consumerDiscountController.addConsumerDiscount)
     .put(consumerDiscountController.updateConsumerDiscount);
-    
+
 router
     .route("/consumer-discounts/:id")
     .get(consumerDiscountController.getConsumerDiscount);

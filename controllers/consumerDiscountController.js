@@ -4,7 +4,7 @@ const ConsumerDiscount = require("../models/ConsumerDiscount");
 const Discount = require("../models/Discount");
 const Merchant = require("../models/Merchant");
 
-const getConsumerDiscount = async (req, res) => {
+const getAllConsumerDiscounts = async (req, res) => {
     try {
         const consumerId = req.consumerId;
 
@@ -31,10 +31,14 @@ const getConsumerDiscount = async (req, res) => {
             })
             .lean();
 
-        if (!consumerDiscount) {
-            return res.status(404).json({ error: "Coupon not found" });
+        if (!consumerDiscounts?.length) {
+            return res
+                .status(400)
+                .json({ message: "No consumer discounts found" });
         }
-        res.status(200).json(consumerDiscount);
+
+        // Return the consumer discounts
+        res.status(200).json(consumerDiscounts);
     } catch (error) {
         // Handle errors
         console.error(error);
@@ -44,7 +48,7 @@ const getConsumerDiscount = async (req, res) => {
 
 const addConsumerDiscount = async (req, res) => {
     try {
-        const { consumerId, discountId } = req.body;
+        const consumerId = req.consumerId;
 
         if (!consumerId) {
             return res
@@ -110,7 +114,6 @@ const addConsumerDiscount = async (req, res) => {
             discount: discountId,
             qrCode,
             qrIdentification,
-            status: "upcoming",
             status: "upcoming",
         });
 
@@ -221,9 +224,9 @@ const getConsumerDiscountsByMerchant = async (req, res) => {
 };
 
 module.exports = {
+    getAllConsumerDiscounts,
     getConsumerDiscount,
     addConsumerDiscount,
     updateConsumerDiscount,
-    getConsumerDiscount,
     getConsumerDiscountsByMerchant,
 };
