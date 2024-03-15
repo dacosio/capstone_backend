@@ -3,14 +3,14 @@ const router = express.Router();
 const consumerDiscountController = require("../controllers/consumerDiscountController");
 
 router
-    .route("/consumer-discounts")
-
+    .route("/consumer-discount")
+    .get(consumerDiscountController.getConsumerDiscount)
     .post(consumerDiscountController.addConsumerDiscount)
     .put(consumerDiscountController.updateConsumerDiscount);
 
 router
-    .route("/consumer-discounts/:id")
-    .get(consumerDiscountController.getConsumerDiscount);
+    .route("/consumer-discounts")
+    .get(consumerDiscountController.getAllConsumerDiscounts);
 
 router
     .route("/consumer-discounts/merchant")
