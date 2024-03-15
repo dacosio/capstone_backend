@@ -3,19 +3,12 @@ const { generateBase64QRCode } = require("../helpers/generateBase64QRCode");
 const ConsumerDiscount = require("../models/ConsumerDiscount");
 const Discount = require("../models/Discount");
 
-const getAllConsumerDiscounts = async (req, res) => {
+const getConsumerDiscount = async (req, res) => {
     try {
-        const consumerId = req.consumerId;
+        const { id } = req.params;
 
-        if (!consumerId) {
-            return res
-                .status(404)
-                .json({ error: "Consumer not found. Please log in" });
-        }
-
-        // Find all consumer discounts for the consumer and populate consumer and discount fields
-        const consumerDiscounts = await ConsumerDiscount.find({
-            consumer: consumerId,
+        const consumerDiscount = await ConsumerDiscount.findOne({
+            _id: id,
         })
             .populate({
                 path: "consumer",
@@ -33,14 +26,10 @@ const getAllConsumerDiscounts = async (req, res) => {
             })
             .lean();
 
-        if (!consumerDiscounts?.length) {
-            return res
-                .status(400)
-                .json({ message: "No consumer discounts found" });
+        if (!consumerDiscount) {
+            return res.status(404).json({ error: "Coupon not found" });
         }
-
-        // Return the consumer discounts
-        res.status(200).json(consumerDiscounts);
+        res.status(200).json(consumerDiscount);
     } catch (error) {
         // Handle errors
         console.error(error);
@@ -50,15 +39,13 @@ const getAllConsumerDiscounts = async (req, res) => {
 
 const addConsumerDiscount = async (req, res) => {
     try {
-        const consumerId = req.consumerId;
+        const { consumerId, discountId } = req.body;
 
         if (!consumerId) {
             return res
                 .status(404)
                 .json({ error: "Consumer not found. Please log in" });
         }
-
-        const { discountId } = req.body;
 
         if (!discountId) {
             return res.status(400).json({ message: "discountId is required" });
@@ -109,7 +96,7 @@ const addConsumerDiscount = async (req, res) => {
             discount: discountId,
             qrCode,
             qrIdentification,
-            status: "active",
+            status: "upcoming",
         });
 
         res.status(201).json({
@@ -156,7 +143,7 @@ const updateConsumerDiscount = async (req, res) => {
 };
 
 module.exports = {
-    getAllConsumerDiscounts,
+    getConsumerDiscount,
     addConsumerDiscount,
     updateConsumerDiscount,
 };

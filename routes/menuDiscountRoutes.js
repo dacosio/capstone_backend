@@ -9,6 +9,10 @@ router
     .get(menuDiscountController.getAllMenuDiscount);
 
 router
+    .route("/menu-discounts/merchant/:merchantId/discount/:discountId")
+    .get(menuDiscountController.getMenuDiscountsByMerchantAndDiscount);
+
+router
     .route("/menu-discounts/merchant")
     .get(menuDiscountController.getMenuDiscountsByMerchant);
 
