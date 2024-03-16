@@ -82,6 +82,38 @@ const getMenuDiscountsByMerchant = async (req, res) => {
     }
 };
 
+const getMenuDiscountsByMerchantAndDiscount = async (req, res) => {
+    try {
+        const { merchantId, discountId } = req.params;
+
+        if (!merchantId && !discountId) {
+            return res
+                .status(400)
+                .json({ message: "merchantId & discountId is required" });
+        }
+
+        const menuDiscounts = await MenuDiscount.find({
+            merchant: merchantId,
+            discount: discountId,
+        })
+            .populate({
+                path: "menu",
+            })
+            .populate({
+                path: "discount",
+            })
+            .populate({
+                path: "merchant",
+            })
+            .lean();
+
+        res.status(200).json(menuDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const getMenuDiscountsByDiscount = async (req, res) => {
     try {
         const { discountId } = req.query;
@@ -113,5 +145,6 @@ module.exports = {
     addMenuDiscount,
     getAllMenuDiscount,
     getMenuDiscountsByMerchant,
+    getMenuDiscountsByMerchantAndDiscount,
     getMenuDiscountsByDiscount,
 };

@@ -225,8 +225,8 @@ const getConsumerDiscountsByMerchant = async (req, res) => {
 
 module.exports = {
     getAllConsumerDiscounts,
+    getConsumerDiscount,
     addConsumerDiscount,
     updateConsumerDiscount,
-    getConsumerDiscount,
     getConsumerDiscountsByMerchant,
 };
