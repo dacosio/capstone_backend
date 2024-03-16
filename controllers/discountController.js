@@ -83,11 +83,18 @@ const getAllActiveDiscount = async (req, res) => {
             return res.status(400).json({ error: "Merchant not found" });
         }
 
-        const currentDate = new Date();
+        const currentDateTime = new Date();
+        const currentDate = currentDateTime.setHours(0, 0, 0, 0);
 
         const allDiscount = await Discount.find({
             merchant,
-            validToDate: { $gte: currentDate },
+            $expr: {
+                $gte: [
+                    // extract just date on validToDate using substring, $\toDate convert the string date to date format
+                    { $toDate: { $substrCP: ["$validToDate", 0, 10] } },
+                    currentDate,
+                ],
+            },
         }).populate({
             path: "menuIds",
             select: "name originalPrice imageUrl",
@@ -108,11 +115,18 @@ const getActiveDiscountsByMerchant = async (req, res) => {
             return res.status(400).json({ message: "merchantId is required" });
         }
 
-        const currentDate = new Date();
+        const currentDate = new Date().setHours(0, 0, 0, 0);
 
         const activeDiscounts = await Discount.find({
             merchant: merchantId,
-            validToDate: { $gte: currentDate },
+            $expr: {
+                $gte: [
+                    { $toDate: { $substrCP: ["$validToDate", 0, 10] } },
+                    currentDate,
+                ],
+            },
+        }).populate({
+            path: "menuIds",
         });
 
         res.status(200).json(activeDiscounts);
