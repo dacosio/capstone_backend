@@ -1,7 +1,13 @@
+const mongoose = require("mongoose");
 const Discount = require("../models/Discount");
+const MenuDiscount = require("../models/MenuDiscount");
 
 const addDiscount = async (req, res) => {
+    let session;
     try {
+        session = await mongoose.startSession();
+        session.startTransaction();
+
         const {
             label,
             description,
@@ -13,7 +19,6 @@ const addDiscount = async (req, res) => {
             menuIds,
         } = req.body;
         const merchant = req.merchantId;
-        console.log(merchant);
 
         if (!merchant) {
             return res.status(400).json({ error: "Merchant not found" });
@@ -30,18 +35,39 @@ const addDiscount = async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const newDiscount = await Discount.create({
-            label,
-            description,
-            percentDiscount,
-            // imageUrl,
-            validFromTime,
-            validToTime,
-            validFromDate,
-            validToDate,
-            menuIds,
-            merchant,
-        });
+        const newDiscount = await Discount.create(
+            [
+                {
+                    label,
+                    description,
+                    percentDiscount,
+                    // imageUrl,
+                    validFromTime,
+                    validToTime,
+                    validFromDate,
+                    validToDate,
+                    menuIds,
+                    merchant,
+                },
+            ],
+            { session }
+        );
+
+        for (const menuId of menuIds) {
+            await MenuDiscount.create(
+                [
+                    {
+                        merchant,
+                        discount: newDiscount[0]._id,
+                        menu: menuId,
+                    },
+                ],
+                { session }
+            );
+        }
+
+        await session.commitTransaction();
+        session.endSession();
 
         res.status(200).json({
             message: "Coupon created successfullly.",
@@ -49,6 +75,8 @@ const addDiscount = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
+        await session.abortTransaction();
+        session.endSession();
         res.status(500).json({ error: "Coupon not created." });
     }
 };
