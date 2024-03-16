@@ -5,13 +5,13 @@ const AdPrice = require("../models/AdPrice");
 const StripeCustomer = require("../models/StripeCustomer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
-const getAllAds = async (req, res) => {
+const getAds = async (req, res) => {
     try {
-        const ads = await Ad.find({}).lean();
-        if (ads) return res.status(200).json({ message: "No Ads available" });
+        const ads = await Ad.find().lean();
 
         return res.status(200).json(ads);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -186,7 +186,7 @@ const createAdPrices = async (req, res) => {
 };
 
 module.exports = {
-    getAllAds,
+    getAds,
     createAds,
     generateAdText,
     getAdPrices,
