@@ -30,6 +30,14 @@ const AdSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        primary: {
+            type: String,
+            required: true,
+        },
+        accent: {
+            type: String,
+            required: true,
+        },
         merchantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Merchant",

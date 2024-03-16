@@ -27,6 +27,8 @@ const createAds = async (req, res) => {
             endDate,
             amount,
             imageUrl,
+            primary,
+            accent,
             paymentMethodId,
         } = req.body;
         console.log("🚀 ~ createAds ~ imageUrl:", imageUrl);
@@ -49,7 +51,9 @@ const createAds = async (req, res) => {
             !endDate ||
             !amount ||
             !imageUrl ||
-            !paymentMethodId
+            !paymentMethodId ||
+            !primary ||
+            !accent
         ) {
             return res
                 .status(400)
@@ -92,6 +96,8 @@ const createAds = async (req, res) => {
                 startDate,
                 endDate,
                 amount,
+                primary,
+                accent,
                 merchantId,
             });
             return res
