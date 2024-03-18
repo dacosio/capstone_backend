@@ -16,4 +16,12 @@ router
     .route("/consumer-discounts/merchant")
     .get(consumerDiscountController.getConsumerDiscountsByMerchant);
 
+router
+    .route(
+        "/consumer-discounts/merchant/:merchantId/consumer/:consumerId/discount/:discountId"
+    )
+    .get(
+        consumerDiscountController.getConsumerDiscountsByMerchantConsumerDiscount
+    );
+
 module.exports = router;
