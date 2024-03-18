@@ -223,10 +223,50 @@ const getConsumerDiscountsByMerchant = async (req, res) => {
     }
 };
 
+const getConsumerDiscountsByMerchantConsumerDiscount = async (req, res) => {
+    try {
+        const { merchantId } = req.params;
+        const { consumerId } = req.params;
+        const { discountId } = req.params;
+
+        if (!merchantId || !consumerId || !discountId) {
+            return res
+                .status(400)
+                .json({
+                    message: "merchantId, customerId & idiscountId is required",
+                });
+        }
+
+        const consumerDiscounts = await ConsumerDiscount.findOne({
+            merchant: merchantId,
+            consumer: consumerId,
+            discount: discountId,
+        })
+            .populate({
+                path: "merchant",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "consumer",
+                populate: { path: "user", select: "-password" },
+            })
+            .populate({
+                path: "discount",
+            })
+            .lean();
+
+        res.status(200).json(consumerDiscounts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 module.exports = {
     getAllConsumerDiscounts,
     getConsumerDiscount,
     addConsumerDiscount,
     updateConsumerDiscount,
     getConsumerDiscountsByMerchant,
+    getConsumerDiscountsByMerchantConsumerDiscount,
 };
