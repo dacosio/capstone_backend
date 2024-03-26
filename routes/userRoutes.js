@@ -7,6 +7,7 @@ const verifyJWT = require("../middleware/verifyJWT");
 router.use(verifyJWT);
 
 router.route("/consumers").get(usersController.getAllConsumers);
+router.route("/consumer").get(usersController.getConsumer);
 router.route("/merchants").get(usersController.getAllMerchants);
 router.route("/merchant").get(usersController.getMerchant);
 

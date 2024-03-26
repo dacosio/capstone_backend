@@ -21,6 +21,25 @@ const getAllConsumers = async (req, res) => {
     }
 };
 
+const getConsumer = async (req, res) => {
+    try {
+        const consumer = await Consumer.findOne({ _id: req.consumerId })
+            .populate({
+                path: "user",
+                select: "-password",
+            })
+            .lean();
+
+        if (!consumer) {
+            return res.status(404).json({ message: "Consumer not found" });
+        }
+
+        res.status(200).json(consumer);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const getAllMerchants = async (req, res) => {
     try {
         const { keyword } = req.query;
@@ -71,6 +90,7 @@ const uploadFile = async (req, res) => {
 
 module.exports = {
     getAllConsumers,
+    getConsumer,
     getAllMerchants,
     getMerchant,
     uploadFile,
