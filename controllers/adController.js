@@ -7,7 +7,11 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
 const getAds = async (req, res) => {
     try {
-        const ads = await Ad.find().lean();
+        const ads = await Ad.find()
+            .populate({
+                path: "merchantId",
+            })
+            .lean();
 
         return res.status(200).json(ads);
     } catch (error) {
