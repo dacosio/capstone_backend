@@ -10,7 +10,7 @@ const register = async (req, res) => {
         // role has to either be consumer or merchant
         const { email, password, firstName, lastName, role } = req.body;
 
-        if (!email || !password || !firstName || !lastName) {
+        if (!email || !password || !firstName || !lastName || !role) {
             return res
                 .status(400)
                 .json({ message: "Please provide all fields" });
@@ -45,12 +45,9 @@ const register = async (req, res) => {
             role,
         });
 
-        if (newUser)
-            res.status(201).json({
-                message: `New user ${newUser.email} created`,
-                userId: newUser._id,
-                role: newUser.role,
-            });
+        delete newUser.password;
+
+        res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -224,8 +221,7 @@ const addMerchant = async (req, res) => {
             address,
             cuisineType,
             cost,
-            openings,
-            closings,
+            operatingTimes,
             isVerified,
             userId,
         } = req.body;
@@ -241,8 +237,8 @@ const addMerchant = async (req, res) => {
             "Thai",
             "Others",
         ];
-        const costs = ["1", "2", "3", "4"];
-        const pattern = /^1970-01-01T\d{2}:\d{2}:00\.000\+00:00$/;
+        const costs = [1, 2, 3, 4];
+        const pattern = /^1970-01-(01|02)T\d{2}:\d{2}:00\.000Z$/;
 
         if (
             !name ||
@@ -254,12 +250,13 @@ const addMerchant = async (req, res) => {
             !cuisineTypes.includes(cuisineType) ||
             !cost ||
             !costs.includes(cost) ||
-            !openings ||
-            openings.length !== 7 ||
-            !openings.every((opening) => pattern.test(opening)) ||
-            !closings ||
-            !closings.every((closing) => pattern.test(closing)) ||
-            closings.length !== 7 ||
+            !operatingTimes ||
+            operatingTimes.length !== 7 ||
+            !operatingTimes.every(
+                (operatingTime) =>
+                    pattern.test(operatingTime.openingTime) &&
+                    pattern.test(operatingTime.closingTime)
+            ) ||
             typeof isVerified !== "boolean" ||
             !userId
         ) {
@@ -281,17 +278,12 @@ const addMerchant = async (req, res) => {
             address,
             cuisineType,
             cost,
-            openings,
-            closings,
+            operatingTimes,
             isVerified,
             user: userId,
         });
-        if (newMerchant) {
-            res.status(201).json({
-                message: "Merchant added successfully",
-                newMerchant,
-            });
-        }
+
+        res.status(201).json(newMerchant);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
